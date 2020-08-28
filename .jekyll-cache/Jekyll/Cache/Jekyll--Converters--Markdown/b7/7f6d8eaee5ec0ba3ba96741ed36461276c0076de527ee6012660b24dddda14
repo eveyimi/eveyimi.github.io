@@ -1,4 +1,31 @@
-I"~<ul class="task-list">
+I"o<p>Hello, welcome to my blog! This post will introduce how to create a personal website with <a href="https://pages.github.com/">GitHub Pages</a> and site generator <a href="https://jekyllrb.com/">Jekyll</a>.</p>
+
+<h1 id="create-a-repository">Create a repository</h1>
+<p>The fist thing you need to do is to go to GitHub and create a new repository named <em>username</em>.github.io, where <em>username</em> is your username on GitHub. If the first part of the repository doesn’t exactly match your username, it won’t work, so make sure to get it right.</p>
+
+<p><img src="/images/HW1/repo.png" alt="Create a new repository" />
+<em>Create a new repository</em></p>
+
+<p>And then you can clone it to your local machine.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">git clone https://github.com/username/username.github.io</code></pre></figure>
+
+<p><br /></p>
+
+<h1 id="combine-a-jekyll-theme">Combine a Jekyll theme</h1>
+<p>Jekyll is a simple, blog-aware, static site generator for personal, project, or organization sites. You can also choose Pelican or Hugo. Here I will use Jekyll. You can go to the official website of Jekyll for more themes.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">~ <span class="nv">$ </span>gem <span class="nb">install </span>bundler jekyll
+~ <span class="nv">$ </span>jekyll new my-awesome-site
+~ <span class="nv">$ </span><span class="nb">cd </span>my-awesome-site
+~/my-awesome-ste <span class="err">$</span>
+~ <span class="nv">$ </span>bundle <span class="nb">exec </span>jekyll serve
+<span class="c"># =&gt; Now browse to http://localhost:4000</span></code></pre></figure>
+
+<h1 id="add-new-posts">Add new posts</h1>
+
+<h1 id="other-decorations">Other decorations</h1>
+<ul class="task-list">
   <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />write a blog describing how you did this exercise
     <ol>
       <li>Create Github-pages
@@ -45,4 +72,5 @@
     </ol>
   </li>
 </ul>
+
 :ET

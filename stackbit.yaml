@@ -51,10 +51,10 @@ models:
         name: facebook
         label: Facebook
         description: Your Facebook url.
-      - type: string
-        name: dribbble
-        label: Dribbble
-        description: Your Dribbble url.
+      # - type: string
+      #   name: dribbble
+      #   label: Dribbble
+      #   description: Your Dribbble url.
       - type: string
         name: instagram
         label: Instagram

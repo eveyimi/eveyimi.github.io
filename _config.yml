@@ -10,12 +10,12 @@ author:
   bio: Hi, my name is Yi Mi. Thank you for visiting my blog.
 
 # Contact links
-twitter: https://twitter.com/ # Add your Twitter handle
-facebook: https://facebook.com/ # Add your Facebook handle
-dribbble: https://dribbble.com/ # Add your Dribbble handle
-instagram: https://instagram.com/ # Add your Instagram handle
-pinterest: https://pinterest.com/ # Add your Pinterest handle
-email: forexample@website.com # Add your Email address
+twitter:  # Add your Twitter handle
+# facebook:  # Add your Facebook handle
+# dribbble:  # Add your Dribbble handle
+# instagram:  # Add your Instagram handle
+# pinterest:  # Add your Pinterest handle
+email: yi.mi@duke.edu # Add your Email address
 
 # Hero Section
 hero: true # To enable the section hero, use the value true. To turn off use the value false.
