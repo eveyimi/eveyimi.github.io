@@ -1,0 +1,48 @@
+I"~<ul class="task-list">
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />write a blog describing how you did this exercise
+    <ol>
+      <li>Create Github-pages
+        <ul>
+          <li>create a new repo with the same name of you Github account. 
+ For more info, please visit <a href="https://pages.github.com/">GitHub Pages | Websites for you and your projects, hosted directly from your GitHub repository. Just edit, push, and your changes are live.</a></li>
+          <li><code class="language-plaintext highlighter-rouge">git clone &lt;remote repo&gt;</code></li>
+        </ul>
+      </li>
+      <li>Use jekyll theme
+        <ul>
+          <li>
+            <table>
+              <tbody>
+                <tr>
+                  <td>download theme from [Featured Themes</td>
+                  <td>Jekyll Themes](https://jekyll-themes.com/)</td>
+                </tr>
+              </tbody>
+            </table>
+          </li>
+          <li>edit <code class="language-plaintext highlighter-rouge">_config.yml</code> to your own info</li>
+        </ul>
+      </li>
+      <li>run in local
+        <ul>
+          <li>set up env：<a href="https://stidio.github.io/2016/11/build_blog_with_github_and_jekyll/">使用GitHub Pages+Jekyll搭建个人博客</a></li>
+          <li>use <code class="language-plaintext highlighter-rouge">bundle to render auto</code></li>
+        </ul>
+      </li>
+      <li>Add new post
+        <ul>
+          <li>how to name: date is tradition</li>
+          <li>several style: code snippet, cite, italics and so on. Please visit <code class="language-plaintext highlighter-rouge">style guide</code> page for more style instructions.</li>
+        </ul>
+      </li>
+      <li>Other decorations.
+        <ul>
+          <li>copyright</li>
+          <li>icon</li>
+          <li>tags</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+</ul>
+:ET
