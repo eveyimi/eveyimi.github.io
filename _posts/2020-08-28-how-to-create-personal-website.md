@@ -8,6 +8,8 @@ tags:   [study]
 
 Hello, welcome to my blog! This post will introduce how to create a personal website with **[GitHub Pages][GitHub Pages]** and site generator **[Jekyll][Jekyll]**.
 
+GitHub: https://github.com/eveyimi/eveyimi.github.io
+
 # Create a repository
 The fist thing you need to do is to go to GitHub and create a new repository named *username*.github.io, where *username* is your username on GitHub. If the first part of the repository doesn’t exactly match your username, it won’t work, so make sure to get it right.
 
@@ -111,37 +113,12 @@ To add new posts, simply add a file in the `_posts` directory that follows the c
 
 <br>
 
-# Other decorations
-
-
-<br>
-
-
-
 # Publish your website
 
+Once you push your code to the repository, you're done! Fire up a browser and go to https://username.github.io.
 
 <br>
 
-
-- [ ] write a blog describing how you did this exercise
-	1. Create Github-pages
-		- create a new repo with the same name of you Github account. 
-        For more info, please visit [GitHub Pages | Websites for you and your projects, hosted directly from your GitHub repository. Just edit, push, and your changes are live.](https://pages.github.com/)
-		- `git clone <remote repo>`
-	2. Use jekyll theme
-		- download theme from [Featured Themes | Jekyll Themes](https://jekyll-themes.com/)
-		- edit `_config.yml` to your own info
-	3. run in local
-		- set up env：[使用GitHub Pages+Jekyll搭建个人博客](https://stidio.github.io/2016/11/build_blog_with_github_and_jekyll/)
-		- use `bundle to render auto`
-	4. Add new post
-		- how to name: date is tradition
-		- several style: code snippet, cite, italics and so on. Please visit `style guide` page for more style instructions.
-	5. Other decorations.
-		- copyright
-		- icon
-		- tags
 
 [GitHub Pages]: https://pages.github.com/
 [Jekyll]: https://jekyllrb.com/

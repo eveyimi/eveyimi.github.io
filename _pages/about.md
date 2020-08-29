@@ -9,6 +9,12 @@ Hi, my name is Yi Mi. I am a second-year master student from Duke University. My
 
 I would use this website to share my data science projects of [BIOSTAT 823][BIOSTAT 823].
 
+Please visit my GitHub and Linkedin to know me better.
+
+GitHub: https://github.com/eveyimi
+
+Linkedin: https://www.linkedin.com/in/yimi97/
+
 [BIOSTAT 823]: https://github.com/cliburn/bios-823-2020
 
 <!-- #### Industry Design & Media
