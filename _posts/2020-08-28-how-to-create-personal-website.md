@@ -3,7 +3,7 @@ layout: post
 title:  "How to create a personal website with GitHub Pages"
 date:   2020-08-28
 image:  images/04.jpg
-tags:   [Study]
+tags:   [study]
 ---
 
 Hello, welcome to my blog! This post will introduce how to create a personal website with **[GitHub Pages][GitHub Pages]** and site generator **[Jekyll][Jekyll]**.

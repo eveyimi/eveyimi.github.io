@@ -11,11 +11,13 @@ author:
 
 # Contact links
 twitter:  # Add your Twitter handle
-# facebook:  # Add your Facebook handle
-# dribbble:  # Add your Dribbble handle
-# instagram:  # Add your Instagram handle
-# pinterest:  # Add your Pinterest handle
+facebook:  # Add your Facebook handle
+dribbble:  # Add your Dribbble handle
+instagram:  # Add your Instagram handle
+pinterest:  # Add your Pinterest handle
 email: yi.mi@duke.edu # Add your Email address
+linkedin: https://www.linkedin.com/in/yimi97/ # Add your Email address
+github: https://github.com/yimi97 # Add your github
 
 # Hero Section
 hero: true # To enable the section hero, use the value true. To turn off use the value false.
