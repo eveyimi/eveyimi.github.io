@@ -199,7 +199,7 @@ if __name__ == "__main__":
   	print(orderedRadicals(100000, 10000))
 # 21417
 {% endhighlight %}
-If rad(n) is sorted for 1 ≤ n ≤ 100000, the result of E(10000) is *5537376230*.
+If rad(n) is sorted for 1 ≤ n ≤ 100000, the result of E(10000) is *21417*.
 
 <br>
 
