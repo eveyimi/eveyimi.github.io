@@ -1,0 +1,202 @@
+I"�B<p>Hello, welcome to my blog! This post will share the solutions of three <strong><a href="https://projecteuler.net/archives">Eular projects</a></strong>.</p>
+
+<p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="about-project-euler">About Project Euler</h1>
+
+<p>Project Euler is a series of challenging mathematical/computer programming problems that will require more than just mathematical insights to solve. Although mathematics will help you arrive at elegant and efficient methods, the use of a computer and programming skills will be required to solve most problems.</p>
+
+<p>The motivation for starting Project Euler, and its continuation, is to provide a platform for the inquiring mind to delve into unfamiliar areas and learn new concepts in a fun and recreational context.</p>
+
+<h1 id="three-problems-i-chose">Three problems I chose</h1>
+
+<h2 id="question-13">Question 13</h2>
+<h3 id="question">Question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
+    37107287533902102798797998220837590246510135740250
+    46376937677490009712648124896970078050417018260538
+    74324986199524741059474233309513058123726617309629
+    91942213363574161572522430563301811072406154908250
+    23067588207539346171171980310421047513778063246676
+    89261670696623633820136378418383684178734361726757
+    28112879812849979408065481931592621691275889832738
+    44274228917432520321923589422876796487670272189318
+    47451445736001306439091167216856844588711603153276
+    70386486105843025439939619828917593665686757934951
+    ...
+    *a hundred line*
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach">Approach</h3>
+
+<h3 id="code">Code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">largeSum</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]))[:</span><span class="mi">10</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"number.txt"</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">largeSum</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="n">f</span><span class="p">.</span><span class="n">close</span><span class="p">()</span> </code></pre></figure>
+
+<h2 id="question-31">Question 31</h2>
+<h3 id="question-1">question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>In the United Kingdom the currency is made up of pound (£) and pence (p). There are eight coins in general circulation:
+    1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p).
+It is possible to make £2 in the following way:
+    1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+How many different ways can £2 be made using any number of coins?
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach-1">approach</h3>
+
+<h3 id="code-1">code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">coinSums</span><span class="p">():</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">201</span>
+    <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">coin</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span> <span class="o">-</span> <span class="n">c</span><span class="p">):</span>
+            <span class="n">dp</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<h3 id="result">result</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">coinSums</span><span class="p">())</span>
+<span class="c1"># 73682</span></code></pre></figure>
+
+<p>Run the coinSums() function. The result is £2 can be made 73682 ways using any number of coins</p>
+
+<h2 id="question-124-ordered-radicals">Question 124. Ordered radicals</h2>
+
+<h3 id="question-2">question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The radical of n, rad(n), is the product of the distinct prime factors of n. For example, 504 = 23 × 32 × 7, so rad(504) = 2 × 3 × 7 = 42.
+If we calculate rad(n) for 1 ≤ n ≤ 10, then sort them on rad(n), and sorting on n if the radical values are equal, we get:
+
+        Unsorted       Sorted
+        n  rad(n)   n   rad(n)  k
+        1    1      1     1     1
+        2    2      2     2     2
+        3    3      4     2     3
+        4    2      8     2     4
+        5    5      3     3     5
+        6    6      9     3     6
+        7    7      5     5     7
+        8    2      6     6     8 	
+        9    3      7     7     9
+        10   10     10    10    10 	
+
+Let E(k) be the kth element in the sorted n column; for example, E(4) = 8 and E(6) = 9.
+If rad(n) is sorted for 1 ≤ n ≤ 100000, find E(10000).
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach-2">approach</h3>
+
+<h3 id="code-2">code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">orderedRadicals</span><span class="p">():</span>
+    <span class="n">rad</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100001</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rad</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">rad</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rad</span><span class="p">),</span> <span class="n">i</span><span class="p">):</span>
+                <span class="n">rad</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rad</span><span class="p">)[</span><span class="mi">10000</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<h3 id="result-1">result</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+	<span class="k">print</span><span class="p">(</span><span class="n">orderedRadicals</span><span class="p">())</span></code></pre></figure>
+
+<p>## 
+Jekyll is a simple, blog-aware, static site generator for personal, project, or organization sites. You can also choose Pelican or Hugo. Here I will use Jekyll. You can go to the official website of Jekyll for more themes.</p>
+
+<h2 id="set-up-enviroment">Set up enviroment</h2>
+
+<p>To run Jekyll, you need to set up enviroment first. Follow the instruction below to install required package. Once you finish it, you can browse <em>http://localhost:4000</em> and check your personal website.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">~ <span class="nv">$ </span>gem <span class="nb">install </span>bundler jekyll</code></pre></figure>
+
+<p>If you want to create a simple Jekyll theme you can do that as followed. But here I will use a published theme instead.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">~ <span class="nv">$ </span>gem <span class="nb">install </span>bundler jekyll
+~ <span class="nv">$ </span>jekyll new my-awesome-site
+~ <span class="nv">$ </span><span class="nb">cd </span>my-awesome-site
+~/my-awesome-site <span class="err">$</span>
+~ <span class="nv">$ </span>bundle <span class="nb">exec </span>jekyll serve
+<span class="c"># =&gt; Now browse to http://localhost:4000</span></code></pre></figure>
+
+<h2 id="download-a-jekyll-theme">Download a Jekyll theme</h2>
+
+<p>You can select a Jekyll theme from its official website. I selected my theme from <em>https://jekyll-themes.com</em> and the theme name is <strong>[Reked][Reked]</strong>. You can both download or <code class="language-plaintext highlighter-rouge">git clone</code>. Here I chose to download it and initialize the local directory as a Git repository. Please follow the below instructions and remember to <code class="language-plaintext highlighter-rouge">unzip</code> the <code class="language-plaintext highlighter-rouge">theme.zip</code> first and go inside the folder using <code class="language-plaintext highlighter-rouge">cd</code>.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">~ <span class="nv">$ </span>git init
+~ <span class="nv">$ </span>git add <span class="nb">.</span>
+~ <span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"First commit"</span>
+~ <span class="nv">$ </span>git remote add origin https://github.com/username/username.github.io.git
+~ <span class="nv">$ </span>git remote <span class="nt">-v</span>
+~ <span class="nv">$ </span>git push <span class="nt">-u</span> origin master</code></pre></figure>
+
+<h2 id="edit-configuration-file">Edit configuration file</h2>
+
+<p>We also need to change the configuration to your own information by editting <code class="language-plaintext highlighter-rouge">_config.yml</code>. There are several settings you can change according to your preference.</p>
+
+<figure class="highlight"><pre><code class="language-yml" data-lang="yml"><span class="na">title</span><span class="pi">:</span> <span class="s">Blog</span> <span class="c1"># The title of the blog.</span>
+<span class="na">logo</span><span class="pi">:</span> <span class="s2">"</span><span class="s">images/logo.svg"</span> <span class="c1"># You can add own logo image.</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">Personal Website for BIOSTAT 823 in 2020 Fall.</span> <span class="c1"># Description.</span>
+<span class="na">baseurl</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span> <span class="c1"># The subpath of your site, e.g. /blog</span>
+<span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">https://eveyimi.github.io"</span> <span class="c1"># The base hostname &amp; protocol for your site.</span>
+
+<span class="c1"># Author Settings</span>
+<span class="na">author</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">Yi Mi</span>
+  <span class="na">bio</span><span class="pi">:</span> <span class="s">Hi, my name is Yi Mi. Thank you for visiting my blog.</span>
+
+<span class="c1"># Contact links</span>
+<span class="na">twitter</span><span class="pi">:</span> <span class="s">https://twitter.com/</span> <span class="c1"># Add your Twitter handle</span>
+<span class="na">facebook</span><span class="pi">:</span> <span class="s">https://facebook.com/</span> <span class="c1"># Add your Facebook handle</span>
+<span class="na">dribbble</span><span class="pi">:</span> <span class="s">https://dribbble.com/</span> <span class="c1"># Add your Dribbble handle</span>
+<span class="na">instagram</span><span class="pi">:</span> <span class="s">https://instagram.com/</span> <span class="c1"># Add your Instagram handle</span>
+<span class="na">pinterest</span><span class="pi">:</span> <span class="s">https://pinterest.com/</span> <span class="c1"># Add your Pinterest handle</span>
+<span class="na">email</span><span class="pi">:</span> <span class="s">forexample@website.com</span> <span class="c1"># Add your Email address</span>
+
+<span class="c1"># Hero Section</span>
+<span class="na">hero</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># To enable the section hero, use the value true. To turn off use the value false.</span>
+<span class="na">hero-title</span><span class="pi">:</span> <span class="s">Welcome</span> <span class="c1"># Add your hero title</span>
+<span class="na">hero-subtitle</span><span class="pi">:</span> <span class="s">This is Yi's Personal website</span> <span class="c1"># Add your hero subtitle</span>
+<span class="na">hero-image</span><span class="pi">:</span> <span class="s">images/14.jpg</span> <span class="c1"># Add background image in section hero</span>
+
+<span class="c1"># Footer</span>
+<span class="na">footer-image</span><span class="pi">:</span> <span class="s">images/14.jpg</span> <span class="c1"># Add background image in footer</span>
+<span class="s">....</span></code></pre></figure>
+
+<h2 id="run-on-your-local-machine">Run on your local machine</h2>
+
+<p>Once you finish the instructions above, you are ready to run your personal website at <em>http://localhost:4000</em>, which can be automatically rendered each time you edit and save.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">~ <span class="nv">$ </span>bundle <span class="nb">exec </span>jekyll serve
+<span class="c"># =&gt; Now browse to http://localhost:4000</span></code></pre></figure>
+
+<p><br /></p>
+
+<h1 id="add-new-posts">Add new posts</h1>
+
+<p>To add new posts, simply add a file in the <code class="language-plaintext highlighter-rouge">_posts</code> directory that follows the convention <code class="language-plaintext highlighter-rouge">YYYY-MM-DD-name-of-post.md</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works. You can also refer to <code class="language-plaintext highlighter-rouge">Style Guide</code> page for more inforamtion about styling and formats.</p>
+
+<p><br /></p>
+
+<h1 id="publish-your-website">Publish your website</h1>
+
+<p>Once you push your code to the repository, you’re done! Fire up a browser and go to https://username.github.io.</p>
+
+<p><br /></p>
+
+:ET

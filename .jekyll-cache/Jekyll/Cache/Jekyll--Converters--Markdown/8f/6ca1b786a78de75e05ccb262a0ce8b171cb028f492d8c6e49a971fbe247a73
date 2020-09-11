@@ -1,0 +1,188 @@
+I".<p>Hello, welcome to my blog! This post will share the solutions of three <strong><a href="https://projecteuler.net/archives">Eular projects</a></strong>.</p>
+
+<p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="about-project-euler">About Project Euler</h1>
+
+<p>Project Euler is a series of challenging mathematical/computer programming problems that will require more than just mathematical insights to solve. Although mathematics will help you arrive at elegant and efficient methods, the use of a computer and programming skills will be required to solve most problems.</p>
+
+<p>The motivation for starting Project Euler, and its continuation, is to provide a platform for the inquiring mind to delve into unfamiliar areas and learn new concepts in a fun and recreational context.</p>
+
+<h1 id="three-problems-i-chose">Three problems I chose</h1>
+
+<h2 id="13-large-sum-solved-by-225164">13. Large sum (Solved by 225164)</h2>
+
+<h3 id="question">question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
+    37107287533902102798797998220837590246510135740250
+    46376937677490009712648124896970078050417018260538
+    74324986199524741059474233309513058123726617309629
+    91942213363574161572522430563301811072406154908250
+    23067588207539346171171980310421047513778063246676
+    89261670696623633820136378418383684178734361726757
+    28112879812849979408065481931592621691275889832738
+    44274228917432520321923589422876796487670272189318
+    47451445736001306439091167216856844588711603153276
+    70386486105843025439939619828917593665686757934951
+    ...
+    *a hundred line*
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach">approach</h3>
+
+<h3 id="code">code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">largeSum</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+    <span class="s">"""A function used to calculate the first ten digits of the sum of numbers.
+
+    Parameters
+    ----------
+    lines : list of str
+        A list of numbers, which are str type first and should be convert to int. 
+    
+    Returns
+    -------
+    str
+        Calculate the sum of the following one-hundred 50-digit numbers, convert the int into str and return the first ten digits.
+    
+    Examples
+    --------
+    &gt;&gt;&gt; lines = ['11111111111', '22222222222']
+    &gt;&gt;&gt; largeSum(lines)
+    3333333333
+
+    """</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]))[:</span><span class="mi">10</span><span class="p">]</span></code></pre></figure>
+
+<h3 id="result">result</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"number.txt"</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">largeSum</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="n">f</span><span class="p">.</span><span class="n">close</span><span class="p">()</span> 
+<span class="c1"># 5537376230</span></code></pre></figure>
+
+<p><br /></p>
+
+<h2 id="31-coin-sums-solved-by-83763">31. Coin sums (Solved by 83763)</h2>
+
+<h3 id="question-1">question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>In the United Kingdom the currency is made up of pound (£) and pence (p). There are eight coins in general circulation:
+    1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p).
+It is possible to make £2 in the following way:
+    1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+How many different ways can £2 be made using any number of coins?
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach-1">approach</h3>
+
+<h3 id="code-1">code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">coinSums</span><span class="p">():</span>
+    <span class="s">"""A function used to calculate the first ten digits of the sum of numbers.
+
+    Parameters
+    ----------
+    lines : list of str
+        A list of numbers, which are str type first and should be convert to int. 
+    
+    Returns
+    -------
+    str
+        Calculate the sum of the following one-hundred 50-digit numbers, convert the int into str and return the first ten digits.
+    
+    Examples
+    --------
+    &gt;&gt;&gt; lines = ['11111111111', '22222222222']
+    &gt;&gt;&gt; largeSum(lines)
+    3333333333
+    
+    """</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">201</span>
+    <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">coin</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span> <span class="o">-</span> <span class="n">c</span><span class="p">):</span>
+            <span class="n">dp</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<h3 id="result-1">result</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">coinSums</span><span class="p">())</span>
+<span class="c1"># 73682</span></code></pre></figure>
+
+<p>Run the coinSums() function. The result is £2 can be made 73682 ways using any number of coins.</p>
+
+<p><br /></p>
+
+<h2 id="124-ordered-radicals-solved-by-13048">124. Ordered radicals (Solved by 13048)</h2>
+
+<h3 id="question-2">question</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The radical of n, rad(n), is the product of the distinct prime factors of n. For example, 504 = 23 × 32 × 7, so rad(504) = 2 × 3 × 7 = 42.
+If we calculate rad(n) for 1 ≤ n ≤ 10, then sort them on rad(n), and sorting on n if the radical values are equal, we get:
+
+        Unsorted       Sorted
+        n  rad(n)   n   rad(n)  k
+        1    1      1     1     1
+        2    2      2     2     2
+        3    3      4     2     3
+        4    2      8     2     4
+        5    5      3     3     5
+        6    6      9     3     6
+        7    7      5     5     7
+        8    2      6     6     8 	
+        9    3      7     7     9
+        10   10     10    10    10 	
+
+Let E(k) be the kth element in the sorted n column; for example, E(4) = 8 and E(6) = 9.
+If rad(n) is sorted for 1 ≤ n ≤ 100000, find E(10000).
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="approach-2">approach</h3>
+
+<h3 id="code-2">code</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">orderedRadicals</span><span class="p">():</span>
+    <span class="s">"""A function used to calculate the first ten digits of the sum of numbers.
+
+    Parameters
+    ----------
+    lines : list of str
+        A list of numbers, which are str type first and should be convert to int. 
+    
+    Returns
+    -------
+    str
+        Calculate the sum of the following one-hundred 50-digit numbers, convert the int into str and return the first ten digits.
+    
+    Examples
+    --------
+    &gt;&gt;&gt; lines = ['11111111111', '22222222222']
+    &gt;&gt;&gt; largeSum(lines)
+    3333333333
+    
+    """</span>
+    <span class="n">rad</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100001</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rad</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">rad</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rad</span><span class="p">),</span> <span class="n">i</span><span class="p">):</span>
+                <span class="n">rad</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rad</span><span class="p">)[</span><span class="mi">10000</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<h3 id="result-2">result</h3>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+  	<span class="k">print</span><span class="p">(</span><span class="n">orderedRadicals</span><span class="p">())</span>
+<span class="c1"># 21417</span></code></pre></figure>
+
+<p><br /></p>
+
+:ET
