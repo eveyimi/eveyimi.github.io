@@ -70,8 +70,6 @@ I splited the data into 10 ranks. The deeper the color, the more serious the Mal
 ### overview
 Extracted the data from the `malaria_deaths.csv` file as a dataframe, we can see that there are four columns, including `Entity`, `Code`, `Year`, `Deaths`. `Deaths` indicates deaths per 100,000 people for the corresponding country. `malaria_inc.info()` tells us there are 6156 rows and 4 columns. I then took a look at the situation of deaths in different countries to by comparing the avearge the deaths from 1990 to 2016.
 
-
-
         RangeIndex: 6156 entries, 0 to 6155
         Data columns (total 4 columns):
          #   Column  Non-Null Count  Dtype  
@@ -110,6 +108,94 @@ ax.get_legend().set_bbox_to_anchor((.12,.12))
 <br>
 For the reason that the max value of deaths data is below 200, I thus splited the data into 3 ranks. The deeper the color, the more serious the Malaria in this country. Just as the previous figure, the Malaria is most serious in Africa area. However, the difference between those two figures is that some rigions like China and Europe seems located inside the medium ranking. I guess it might because the death data is from 1990 rather than from 2000, when the medical level is rather low compare to 21th century. It is possible that almost all countries ware suffring from the Malaria to some extent. However, with the development of technology and medical level, some countries cna better control the Malaria and therefore has fewer cases. It is also the reason that other countries should offer help to those countries who are still suffering from the Malaria.
 
+## 3. Deaths of Malaria in all continents
+
+### overview
+Based on the `malaria_deaths` dataset and `world` dataset, we can see how the Malaria distributes among different continents, using the `continent` field in `world` dataset. I first merge those two datasets, and then group by `continent` and `Year` since I am also curious how the deaths data change over years.
+Next, I unstack the dataframe and save the death data into a dictionary with the `continent` as keys and `Deaths` as values. After doing that, I was able to draw a stackplot as followed. 
+
+### code
+Data Manipulation
+{% highlight python %}
+continent_death = world.merge(malaria_deaths, left_on = 'name', right_on = 'Entity')
+x = continent_death.groupby(['continent', 'Year'])["Deaths"].mean()
+x = x.unstack(level='continent')
+Year = list(x.index)
+death_by_continent = {}
+for c in list(x.columns):
+    death_by_continent[c] = list(x[c])  
+{% endhighlight %}
+
+Data Visualization
+{% highlight python %}
+fig, ax = plt.subplots(figsize = (20, 10))
+ax.stackplot(Year, death_by_continent.values(),
+             labels=death_by_continent.keys())
+ax.legend(loc='lower left')
+ax.set_title('Deaths of Malaria among continents through 1990 to 2016', 
+              fontdict = {'fontsize':25})
+ax.set_xlabel('Year', fontdict = {'fontsize':13})
+ax.set_ylabel('Number of people (millions)', fontdict = {'fontsize':13})
+plt.show()
+{% endhighlight %}
+
+### visualizations
+![Deaths of countries]({{site.baseurl}}/images/HW3/death_continent.png)
+*Deaths of Malaria among continents through 1990 to 2016*
+
+<br>
+As it is shown in the figure, there is a U-curve on deaths of Malaria from 1990 to 2016 and the peek showed in 2002~2003. After that, the deaths ratetall over the world decreased to almost half of before. We can also see that Africa takes the largest position of deaths among all continents and second largest continent is Oceania, and the third is Asia. The reason why Oceania has the second largest death rate is probabally because of the terrain.
+
+## 4. How the age infects deaths of Malaria
+
+### overview
+Extracted the data from the `malaria_deaths_age.csv` file as a dataframe, we can see that there are six columns, including `entity`, `code`, `year`, `age_group`, `deaths`, `Unnamed: 0	`. `age_group` has 5 levels, `15-49`, `5-14`, `50-69`, `70 or older`, `Under 5`. `malaria_deaths_age.info()` tells us there are 30780 rows and 6 columns. I then took a look at the deaths rate of different age groups from 1990 to 2016, by merging to `world`, then grouping by `age_group` and `year`, and finally unstacking and drawing plots.
+
+        RangeIndex: 30780 entries, 0 to 30779
+        Data columns (total 6 columns):
+         #   Column      Non-Null Count  Dtype  
+        ---  ------      --------------  -----  
+         0   Unnamed: 0  30780 non-null  int64  
+         1   entity      30780 non-null  object 
+         2   code        26460 non-null  object 
+         3   year        30780 non-null  int64  
+         4   age_group   30780 non-null  object 
+         5   deaths      30780 non-null  float64
+        dtypes: float64(1), int64(2), object(3)
+
+<br>       
+### code
+Data Manipulation
+{% highlight python %}
+malaria_deaths_age = pd.read_csv("~/work/ym/hw3_malaria/malaria_deaths_age.csv")
+world_death_age = world.merge(malaria_deaths_age, left_on = 'name', right_on = 'entity')
+y = world_death_age.groupby(['age_group', 'year'])["deaths"].mean()
+y = y.unstack(level='age_group')
+Year_age = list(y.index)
+death_by_age = {}
+for c in list(y.columns):
+    death_by_age[c] = list(y[c])  
+{% endhighlight %}
+
+Data Visualization
+{% highlight python %}
+fig, ax = plt.subplots(figsize = (20, 10))
+ax.plot(y)
+ax.legend(y.columns, loc='lower left')
+ax.set_title('Deaths of Malaria among age groups through 1990 to 2016', 
+              fontdict = {'fontsize':25})
+ax.set_xlabel('Year',fontdict = {'fontsize':13})
+ax.set_ylabel('Number of people (millions)', fontdict = {'fontsize':13})
+ax.set_facecolor('whitesmoke')
+plt.show()
+{% endhighlight %}
+
+### visualizations
+![Deaths of countries]({{site.baseurl}}/images/HW3/death_age.png)
+*Deaths of Malaria among age groups through 1990 to 2016*
+
+<br>
+As it is shown in the figure, The age group `Under 5` takes the largest portion of the total death cases, which matched the theory that children under the age of five and pregnant women are the two demographics most at risk of severe infection. It also even did not show a significant decreasing pattern comparing to the cases 30 years ago. Vulnerable groups are not only more susceptible to infection, but also more difficult to restore health. This requires the tilt of more social resources.
 
 
 
@@ -117,4 +203,4 @@ For the reason that the max value of deaths data is below 200, I thus splited th
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
 
 
-https://medium.com/using-specialist-business-databases/creating-a-choropleth-map-using-geopandas-and-financial-data-c76419258746
+<!-- https://medium.com/using-specialist-business-databases/creating-a-choropleth-map-using-geopandas-and-financial-data-c76419258746 -->
