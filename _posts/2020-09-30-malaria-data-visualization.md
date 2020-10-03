@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Three Euler projects"
+title:  "Malaria Data Visualization"
 date:   2020-09-30
 image:  images/leonhard-euler.jpg
 tags:   [study]
