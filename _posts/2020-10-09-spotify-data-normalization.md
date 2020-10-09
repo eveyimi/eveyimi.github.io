@@ -152,8 +152,37 @@ df_composite
 *Composite*
 
 
-# Dataset Overview
+# SQL Query
+First use sqlite3 package to store data:
+{% highlight python %}
+import sqlite3
+conn = sqlite3.connect('spotify.db')
 
+df_track.to_sql('track', conn, if_exists='replace', index = False) 
+df_album.to_sql('album', conn, if_exists='replace', index = False)
+df_genre.to_sql('genre', conn, if_exists='replace', index = False)
+df_playlist.to_sql('playlist', conn, if_exists='replace', index = False)
+df_genre_sub.to_sql('genre_sub', conn, if_exists='replace', index = False)
+df_composite.to_sql('composite', conn, if_exists='replace', index = False)
+{% endhighlight %}
+Then use an SQL query to find the names of all playlists that contain instrumentals. First of all, we find that the average `instumentalness` is 0.085 and min and max are 0.000 and 0.994. So I set the threshold to be 0.08.
+{% highlight sql %}
+%load_ext sql
+%sql sqlite:///spotify.db
+{% endhighlight %}
+{% highlight sql %}
+%%sql
+
+SELECT DISTINCT playlist_name 
+FROM playlist INNER JOIN genre
+ON playlist.playlist_id = genre.playlist_id
+INNER JOIN track
+ON genre.track_id = track.track_id
+WHERE instrumentalness > 0.08
+LIMIT 20;
+{% endhighlight %}
+![7]({{site.baseurl}}/images/HW4/7.png)
+*The names of all playlists that contain instrumentals*
 
 
 [Spotify Dataset]: https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-01-21
