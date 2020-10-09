@@ -1,0 +1,196 @@
+I"�o<p>Hello, welcome to my blog! This post will share the data normalization of <strong><a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-01-21">Spotify Dataset</a></strong>.</p>
+
+<p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="normal-forms">Normal Forms</h1>
+
+<blockquote>
+  <p>Every table should not have any duplication or dependencies that are not key or domain constraints</p>
+
+  <p><strong>First Normal Form (1NF):</strong> If a relation contain composite or multi-valued attribute, it violates first normal form or a relation is in first normal form if it does not contain any composite or multi-valued attribute. A relation is in first normal form if every attribute in that relation is singled valued attribute.</p>
+
+  <p><strong>Second Normal Form (2NF):</strong> To be in second normal form, a relation must be in first normal form and relation must not contain any partial dependency. A relation is in 2NF if it has No Partial Dependency, i.e., no non-prime attribute (attributes which are not part of any candidate key) is dependent on any proper subset of any candidate key of the table. Partial Dependency – If the proper subset of candidate key determines non-prime attribute, it is called partial dependency.</p>
+
+  <p><strong>Third Normal Form (3NF):</strong> A relation is in third normal form, if there is no transitive dependency for non-prime attributes as well as it is in second normal form. A relation is in 3NF if at least one of the following condition holds in every non-trivial function dependency X –&gt; Y
+        &gt; 1. X is a super key.
+        &gt; 2. Y is a prime attribute (each element of Y is part of some candidate key).</p>
+
+  <p><cite>GeeksforGeeks</cite></p>
+</blockquote>
+
+<p><br /></p>
+
+<h1 id="data-visualizations">Data visualizations</h1>
+
+<h2 id="1-incidence-of-malaria-in-different-countries">1. Incidence of Malaria in different countries</h2>
+
+<h3 id="overview">overview</h3>
+<p>Extracted the data from the <code class="language-plaintext highlighter-rouge">malaria_inc.csv</code> file as a dataframe, we can see that there are four columns, including <code class="language-plaintext highlighter-rouge">Entity</code>, <code class="language-plaintext highlighter-rouge">Code</code>, <code class="language-plaintext highlighter-rouge">Year</code>, <code class="language-plaintext highlighter-rouge">Incidence</code>. Incidence means that incidence of malaria per 1,000 population at risk. Calling <code class="language-plaintext highlighter-rouge">malaria_inc.info()</code> we can get the below informtion, telling us there are 508 rows and 4 columns, and also the non-null count and type of each column. The year data is every five year, from 2000 to 2015. It is worthwhile to see how the incidence related to countries and thus we can know which countries need help badly. I first group the <code class="language-plaintext highlighter-rouge">malaria_inc</code> dataset by <code class="language-plaintext highlighter-rouge">Entity</code>, which is the name of countries, calculate the average incidence from 2000 to 2015, and mergeit with <code class="language-plaintext highlighter-rouge">world</code> data from <code class="language-plaintext highlighter-rouge">GeoPandas</code> package, using the name of countries as foreign key. The <code class="language-plaintext highlighter-rouge">world</code> dataset has informations such as country name, code, coordinator, population, continent and soon. After merging the datasets, I can use it to draw a choropleth map, a map which depicts the spread or impact of certain phenomena across a geographical area.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    RangeIndex: 508 entries, 0 to 507
+    Data columns (total 4 columns):
+     #   Column     Non-Null Count  Dtype  
+    ---  ------     --------------  -----  
+     0   Entity     508 non-null    object 
+     1   Code       400 non-null    object 
+     2   Year       508 non-null    int64  
+     3   Incidence  508 non-null    float64
+    dtypes: float64(1), int64(1), object(2)
+</code></pre></div></div>
+
+<p><br /></p>
+<h3 id="code">code</h3>
+<p>Data Manipulation</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">malaria_inc</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"~/malaria_inc.csv"</span><span class="p">)</span>
+<span class="n">malaria_inc</span><span class="p">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Entity"</span><span class="p">,</span> <span class="s">"Code"</span><span class="p">,</span> <span class="s">"Year"</span><span class="p">,</span> <span class="s">"Incidence"</span><span class="p">]</span>
+<span class="n">average_inc</span> <span class="o">=</span> <span class="n">malaria_inc</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">"Entity"</span><span class="p">)[</span><span class="s">"Incidence"</span><span class="p">].</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">world_inc</span> <span class="o">=</span> <span class="n">world</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">average_inc</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="s">'name'</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s">'Entity'</span><span class="p">)</span></code></pre></figure>
+
+<p>Data Visualization</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">ax</span> <span class="o">=</span> <span class="n">world_inc</span><span class="p">.</span><span class="n">dropna</span><span class="p">().</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span> <span class="o">=</span> <span class="s">'Incidence'</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s">'Reds'</span><span class="p">,</span> 
+                              <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="n">scheme</span> <span class="o">=</span> <span class="s">'quantiles'</span><span class="p">,</span> 
+                              <span class="n">k</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">legend</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">'Average incidence of Malaria among contries from 2000 to 2015'</span><span class="p">,</span> 
+              <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">25</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">get_legend</span><span class="p">().</span><span class="n">set_bbox_to_anchor</span><span class="p">((.</span><span class="mi">12</span><span class="p">,.</span><span class="mi">12</span><span class="p">))</span></code></pre></figure>
+
+<h3 id="visualizations">visualizations</h3>
+<p><img src="/images/HW3/inc.png" alt="Incidence of countries" />
+<em>Average incidence of Malaria among contries from 2000 to 2015</em></p>
+
+<p><br />
+I splited the data into 10 ranks. The deeper the color, the more serious the Malaria in this country. As we can see from the figure above, the sub-Saharan Africa has the most urgent situation of Malaria. While some regions are ranged from 0.01 to 2.08 incidence of malaria per 1,000 population, the most serious regions can have more than 400 incidence per 1,000 population, which urges the society to pay more attention to this underrepresented areas and offer help in future control planning.</p>
+
+<h2 id="2-deaths-of-malaria-in-different-countries">2. Deaths of Malaria in different countries</h2>
+
+<h3 id="overview-1">overview</h3>
+<p>Extracted the data from the <code class="language-plaintext highlighter-rouge">malaria_deaths.csv</code> file as a dataframe, we can see that there are four columns, including <code class="language-plaintext highlighter-rouge">Entity</code>, <code class="language-plaintext highlighter-rouge">Code</code>, <code class="language-plaintext highlighter-rouge">Year</code>, <code class="language-plaintext highlighter-rouge">Deaths</code>. <code class="language-plaintext highlighter-rouge">Deaths</code> indicates deaths per 100,000 people for the corresponding country. <code class="language-plaintext highlighter-rouge">malaria_inc.info()</code> tells us there are 6156 rows and 4 columns. I then took a look at the situation of deaths in different countries to by comparing the avearge the deaths from 1990 to 2016.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    RangeIndex: 6156 entries, 0 to 6155
+    Data columns (total 4 columns):
+     #   Column  Non-Null Count  Dtype  
+    ---  ------  --------------  -----  
+     0   Entity  6156 non-null   object 
+     1   Code    5292 non-null   object 
+     2   Year    6156 non-null   int64  
+     3   Deaths  6156 non-null   float64
+    dtypes: float64(1), int64(1), object(2)
+</code></pre></div></div>
+
+<p><br /></p>
+<h3 id="code-1">code</h3>
+<p>Data Manipulation</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">malaria_deaths</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"~/work/ym/hw3_malaria/malaria_deaths.csv"</span><span class="p">)</span>
+<span class="n">malaria_deaths</span><span class="p">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Entity"</span><span class="p">,</span> <span class="s">"Code"</span><span class="p">,</span> <span class="s">"Year"</span><span class="p">,</span> <span class="s">"Deaths"</span><span class="p">]</span>
+<span class="n">average_deaths</span> <span class="o">=</span> <span class="n">malaria_deaths</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">"Entity"</span><span class="p">)[</span><span class="s">"Deaths"</span><span class="p">].</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">world_deaths</span> <span class="o">=</span> <span class="n">world</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">average_deaths</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="s">'name'</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s">'Entity'</span><span class="p">)</span></code></pre></figure>
+
+<p>Data Visualization</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">ax</span> <span class="o">=</span> <span class="n">world_inc</span><span class="p">.</span><span class="n">dropna</span><span class="p">().</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span> <span class="o">=</span> <span class="s">'Deaths'</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s">'Reds'</span><span class="p">,</span> 
+                             <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="n">scheme</span> <span class="o">=</span> <span class="s">'quantiles'</span><span class="p">,</span> 
+                             <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">legend</span> <span class="o">=</span> <span class="bp">True</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">'Average deaths of Malaria among contries from 1990 to 2016'</span><span class="p">,</span> 
+              <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">25</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">get_legend</span><span class="p">().</span><span class="n">set_bbox_to_anchor</span><span class="p">((.</span><span class="mi">12</span><span class="p">,.</span><span class="mi">12</span><span class="p">))</span></code></pre></figure>
+
+<h3 id="visualizations-1">visualizations</h3>
+<p><img src="/images/HW3/death_country.png" alt="Deaths of countries" />
+<em>Average deaths of Malaria among contries from 1990 to 2016</em></p>
+
+<p><br />
+For the reason that the max value of deaths data is below 200, I thus splited the data into 3 ranks. The deeper the color, the more serious the Malaria in this country. Just as the previous figure, the Malaria is most serious in Africa area. However, the difference between those two figures is that some rigions like China and Europe seems located inside the medium ranking. I guess it might because the death data is from 1990 rather than from 2000, when the medical level is rather low compare to 21th century. It is possible that almost all countries ware suffring from the Malaria to some extent. However, with the development of technology and medical level, some countries cna better control the Malaria and therefore has fewer cases. It is also the reason that other countries should offer help to those countries who are still suffering from the Malaria.</p>
+
+<h2 id="3-deaths-of-malaria-in-all-continents">3. Deaths of Malaria in all continents</h2>
+
+<h3 id="overview-2">overview</h3>
+<p>Based on the <code class="language-plaintext highlighter-rouge">malaria_deaths</code> dataset and <code class="language-plaintext highlighter-rouge">world</code> dataset, we can see how the Malaria distributes among different continents, using the <code class="language-plaintext highlighter-rouge">continent</code> field in <code class="language-plaintext highlighter-rouge">world</code> dataset. I first merge those two datasets, and then group by <code class="language-plaintext highlighter-rouge">continent</code> and <code class="language-plaintext highlighter-rouge">Year</code> since I am also curious how the deaths data change over years.
+Next, I unstack the dataframe and save the death data into a dictionary with the <code class="language-plaintext highlighter-rouge">continent</code> as keys and <code class="language-plaintext highlighter-rouge">Deaths</code> as values. After doing that, I was able to draw a stackplot as followed.</p>
+
+<h3 id="code-2">code</h3>
+<p>Data Manipulation</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">continent_death</span> <span class="o">=</span> <span class="n">world</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">malaria_deaths</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="s">'name'</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s">'Entity'</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">continent_death</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">'continent'</span><span class="p">,</span> <span class="s">'Year'</span><span class="p">])[</span><span class="s">"Deaths"</span><span class="p">].</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s">'continent'</span><span class="p">)</span>
+<span class="n">Year</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">death_by_continent</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">columns</span><span class="p">):</span>
+    <span class="n">death_by_continent</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>  </code></pre></figure>
+
+<p>Data Visualization</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">stackplot</span><span class="p">(</span><span class="n">Year</span><span class="p">,</span> <span class="n">death_by_continent</span><span class="p">.</span><span class="n">values</span><span class="p">(),</span>
+             <span class="n">labels</span><span class="o">=</span><span class="n">death_by_continent</span><span class="p">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">'lower left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">'Deaths of Malaria among continents through 1990 to 2016'</span><span class="p">,</span> 
+              <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">25</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">'Year'</span><span class="p">,</span> <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">13</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">'Number of people (millions)'</span><span class="p">,</span> <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">13</span><span class="p">})</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span></code></pre></figure>
+
+<h3 id="visualizations-2">visualizations</h3>
+<p><img src="/images/HW3/death_continent.png" alt="Deaths of countries" />
+<em>Deaths of Malaria among continents through 1990 to 2016</em></p>
+
+<p><br />
+As it is shown in the figure, there is a U-curve on deaths of Malaria from 1990 to 2016 and the peek showed in 2002~2003. After that, the deaths ratetall over the world decreased to almost half of before. We can also see that Africa takes the largest position of deaths among all continents and second largest continent is Oceania, and the third is Asia. The reason why Oceania has the second largest death rate is probabally because of the terrain.</p>
+
+<h2 id="4-how-the-age-infects-deaths-of-malaria">4. How the age infects deaths of Malaria</h2>
+
+<h3 id="overview-3">overview</h3>
+<p>Extracted the data from the <code class="language-plaintext highlighter-rouge">malaria_deaths_age.csv</code> file as a dataframe, we can see that there are six columns, including <code class="language-plaintext highlighter-rouge">entity</code>, <code class="language-plaintext highlighter-rouge">code</code>, <code class="language-plaintext highlighter-rouge">year</code>, <code class="language-plaintext highlighter-rouge">age_group</code>, <code class="language-plaintext highlighter-rouge">deaths</code>, <code class="language-plaintext highlighter-rouge">Unnamed: 0	</code>. <code class="language-plaintext highlighter-rouge">age_group</code> has 5 levels, <code class="language-plaintext highlighter-rouge">15-49</code>, <code class="language-plaintext highlighter-rouge">5-14</code>, <code class="language-plaintext highlighter-rouge">50-69</code>, <code class="language-plaintext highlighter-rouge">70 or older</code>, <code class="language-plaintext highlighter-rouge">Under 5</code>. <code class="language-plaintext highlighter-rouge">malaria_deaths_age.info()</code> tells us there are 30780 rows and 6 columns. I then took a look at the deaths rate of different age groups from 1990 to 2016, by merging to <code class="language-plaintext highlighter-rouge">world</code>, then grouping by <code class="language-plaintext highlighter-rouge">age_group</code> and <code class="language-plaintext highlighter-rouge">year</code>, and finally unstacking and drawing plots.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    RangeIndex: 30780 entries, 0 to 30779
+    Data columns (total 6 columns):
+     #   Column      Non-Null Count  Dtype  
+    ---  ------      --------------  -----  
+     0   Unnamed: 0  30780 non-null  int64  
+     1   entity      30780 non-null  object 
+     2   code        26460 non-null  object 
+     3   year        30780 non-null  int64  
+     4   age_group   30780 non-null  object 
+     5   deaths      30780 non-null  float64
+    dtypes: float64(1), int64(2), object(3)
+</code></pre></div></div>
+
+<p><br /></p>
+<h3 id="code-3">code</h3>
+<p>Data Manipulation</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">malaria_deaths_age</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"~/work/ym/hw3_malaria/malaria_deaths_age.csv"</span><span class="p">)</span>
+<span class="n">world_death_age</span> <span class="o">=</span> <span class="n">world</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">malaria_deaths_age</span><span class="p">,</span> <span class="n">left_on</span> <span class="o">=</span> <span class="s">'name'</span><span class="p">,</span> <span class="n">right_on</span> <span class="o">=</span> <span class="s">'entity'</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">world_death_age</span><span class="p">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">'age_group'</span><span class="p">,</span> <span class="s">'year'</span><span class="p">])[</span><span class="s">"deaths"</span><span class="p">].</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s">'age_group'</span><span class="p">)</span>
+<span class="n">Year_age</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">y</span><span class="p">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">death_by_age</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">y</span><span class="p">.</span><span class="n">columns</span><span class="p">):</span>
+    <span class="n">death_by_age</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>  </code></pre></figure>
+
+<p>Data Visualization</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">legend</span><span class="p">(</span><span class="n">y</span><span class="p">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s">'lower left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">'Deaths of Malaria among age groups through 1990 to 2016'</span><span class="p">,</span> 
+              <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">25</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">'Year'</span><span class="p">,</span><span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">13</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">'Number of people (millions)'</span><span class="p">,</span> <span class="n">fontdict</span> <span class="o">=</span> <span class="p">{</span><span class="s">'fontsize'</span><span class="p">:</span><span class="mi">13</span><span class="p">})</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s">'whitesmoke'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span></code></pre></figure>
+
+<h3 id="visualizations-3">visualizations</h3>
+<p><img src="/images/HW3/death_age.png" alt="Deaths of countries" />
+<em>Deaths of Malaria among age groups through 1990 to 2016</em></p>
+
+<p><br />
+As it is shown in the figure, The age group <code class="language-plaintext highlighter-rouge">Under 5</code> takes the largest portion of the total death cases, which matched the theory that children under the age of five and pregnant women are the two demographics most at risk of severe infection. It also even did not show a significant decreasing pattern comparing to the cases 30 years ago. Vulnerable groups are not only more susceptible to infection, but also more difficult to restore health. This requires the tilt of more social resources.</p>
+
+<!-- https://medium.com/using-specialist-business-databases/creating-a-choropleth-map-using-geopandas-and-financial-data-c76419258746 -->
+:ET
