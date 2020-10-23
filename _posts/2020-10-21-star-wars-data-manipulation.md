@@ -2,190 +2,235 @@
 layout: post
 title:  "Star Wars Data Manipulation"
 date:   2020-10-21
-image:  images/HW4/spotify.png
+image:  images/HW5/logo.jpg
 tags:   [study]
 ---
 
-Hello, welcome to my blog! This post will share the data normalization of **[Spotify Dataset][Spotify Dataset]**.
+Hello, welcome to my blog! This post will share the data manipulation of **[Star Wars Dataset][Star Wars Dataset]**.
 
 Please visit my **[GitHub][GitHub]** for more information. 
 
-# Normal Forms
+# Introduction
+The Star Wars API is the world's first quantified and programmatically-formatted set of Star Wars data.
 
-> Every table should not have any duplication or dependencies that are not key or domain constraints
->
-> **First Normal Form (1NF):** If a relation contain composite or multi-valued attribute, it violates first normal form or a relation is in first normal form if it does not contain any composite or multi-valued attribute. A relation is in first normal form if every attribute in that relation is singled valued attribute.
-> 
-> **Second Normal Form (2NF):** To be in second normal form, a relation must be in first normal form and relation must not contain any partial dependency. A relation is in 2NF if it has No Partial Dependency, i.e., no non-prime attribute (attributes which are not part of any candidate key) is dependent on any proper subset of any candidate key of the table. Partial Dependency – If the proper subset of candidate key determines non-prime attribute, it is called partial dependency.
-> 
-> **Third Normal Form (3NF):** A relation is in third normal form, if there is no transitive dependency for non-prime attributes as well as it is in second normal form. A relation is in 3NF if at least one of the following condition holds in every non-trivial function dependency X –> Y:
->    1. X is a super key.
->    2. Y is a prime attribute (each element of Y is part of some candidate key).
-> 
-> <cite>GeeksforGeeks</cite>
+# Consume data
+Using the below code to consume data using Star Wars API, we find that there are 82 people in total. 
+
+{% highlight python %}
+base_url = 'https://swapi.dev/api/people'
+resp = requests.get(base_url)
+data = resp.json()
+{% endhighlight %}
+
+        {'count': 82,
+        'next': 'http://swapi.dev/api/people/?page=2',
+        'previous': None,
+        'results': [{'name': 'Luke Skywalker',
+        'height': '172',
+        'mass': '77',
+        'hair_color': 'blond',
+        'skin_color': 'fair',
+        'eye_color': 'blue',
+        'birth_year': '19BBY',
+        'gender': 'male',
+        'homeworld': 'http://swapi.dev/api/planets/1/',
+        'films': ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/6/'],
+        'species': [],
+        'vehicles': ['http://swapi.dev/api/vehicles/14/',
+        'http://swapi.dev/api/vehicles/30/'],
+        'starships': ['http://swapi.dev/api/starships/12/',
+        'http://swapi.dev/api/starships/22/'],
+        'created': '2014-12-09T13:50:51.644000Z',
+        'edited': '2014-12-20T21:17:56.891000Z',
+        'url': 'http://swapi.dev/api/people/1/'},
+        {'name': 'C-3PO',
+        'height': '167',
+        'mass': '75',
+        'hair_color': 'n/a',
+        'skin_color': 'gold',
+        'eye_color': 'yellow',
+        'birth_year': '112BBY',
+        'gender': 'n/a',
+        'homeworld': 'http://swapi.dev/api/planets/1/',
+        'films': ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/4/',
+        'http://swapi.dev/api/films/5/',
+        'http://swapi.dev/api/films/6/'],
+        'species': ['http://swapi.dev/api/species/2/'],
+        'vehicles': [],
+        'starships': [],
+        'created': '2014-12-10T15:10:51.357000Z',
+        'edited': '2014-12-20T21:17:50.309000Z',
+        'url': 'http://swapi.dev/api/people/2/'},
+        ... ...
+
+
+<br>
+Then, try to consume them one by one until we get all 82 people data and use a list to store all the JSON data.
+{% highlight python %}
+people = []
+count = 0 # we will stop consuming until the count is 82
+i = 1
+while True:
+    r = requests.get(os.path.join(base_url, str(i))).json()
+    if r == {'detail': 'Not found'}:
+        i += 1
+        continue
+    people.append(r)
+    count += 1
+    i += 1
+    if count == data['count']:
+        break 
+{% endhighlight %}
+
+        [{'name': 'Luke Skywalker',
+        'height': '172',
+        'mass': '77',
+        'hair_color': 'blond',
+        'skin_color': 'fair',
+        'eye_color': 'blue',
+        'birth_year': '19BBY',
+        'gender': 'male',
+        'homeworld': 'http://swapi.dev/api/planets/1/',
+        'films': ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/6/'],
+        'species': [],
+        'vehicles': ['http://swapi.dev/api/vehicles/14/',
+        'http://swapi.dev/api/vehicles/30/'],
+        'starships': ['http://swapi.dev/api/starships/12/',
+        'http://swapi.dev/api/starships/22/'],
+        'created': '2014-12-09T13:50:51.644000Z',
+        'edited': '2014-12-20T21:17:56.891000Z',
+        'url': 'http://swapi.dev/api/people/1/'},
+        {'name': 'C-3PO',
+        'height': '167',
+        'mass': '75',
+        'hair_color': 'n/a',
+        'skin_color': 'gold',
+        'eye_color': 'yellow',
+        'birth_year': '112BBY',
+        'gender': 'n/a',
+        'homeworld': 'http://swapi.dev/api/planets/1/',
+        'films': ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/4/',
+        'http://swapi.dev/api/films/5/',
+        'http://swapi.dev/api/films/6/'],
+        'species': ['http://swapi.dev/api/species/2/'],
+        'vehicles': [],
+        'starships': [],
+        'created': '2014-12-10T15:10:51.357000Z',
+        'edited': '2014-12-20T21:17:50.309000Z',
+        'url': 'http://swapi.dev/api/people/2/'},
+        {'name': 'R2-D2',
+        'height': '96',
+        'mass': '32',
+        'hair_color': 'n/a',
+        'skin_color': 'white, blue',
+        'eye_color': 'red',
+        'birth_year': '33BBY',
+        'gender': 'n/a',
+        'homeworld': 'http://swapi.dev/api/planets/8/',
+        'films': ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/4/',
+        'http://swapi.dev/api/films/5/',
+        'http://swapi.dev/api/films/6/'],
+        'species': ['http://swapi.dev/api/species/2/'],
+        'vehicles': [],
+        'starships': [],
+        'created': '2014-12-10T15:11:50.376000Z',
+        'edited': '2014-12-20T21:17:50.311000Z',
+        'url': 'http://swapi.dev/api/people/3/'},
+        ... ...
+
+
+<br>
+We are required to provide the name of films each people appeared in. The raw people data only contains the URL of the films as below.
+{% highlight python %}
+people[0]['films']
+{% endhighlight %}
+        ['http://swapi.dev/api/films/1/',
+        'http://swapi.dev/api/films/2/',
+        'http://swapi.dev/api/films/3/',
+        'http://swapi.dev/api/films/6/']
+
+
+<br>
+And each film API contains the below information, taking the first people as an example.
+{% highlight python %}
+requests.get(people[0]['films'][0]).json()
+{% endhighlight %}
+        {'title': 'A New Hope',
+        'episode_id': 4,
+        'opening_crawl': "It is a period of civil war.\r\nRebel spaceships, striking\r\nfrom a hidden base, have won\r\ntheir first victory against\r\nthe evil Galactic Empire.\r\n\r\nDuring the battle, Rebel\r\nspies managed to steal secret\r\nplans to the Empire's\r\nultimate weapon, the DEATH\r\nSTAR, an armored space\r\nstation with enough power\r\nto destroy an entire planet.\r\n\r\nPursued by the Empire's\r\nsinister agents, Princess\r\nLeia races home aboard her\r\nstarship, custodian of the\r\nstolen plans that can save her\r\npeople and restore\r\nfreedom to the galaxy....",
+        'director': 'George Lucas',
+        'producer': 'Gary Kurtz, Rick McCallum',
+        'release_date': '1977-05-25',
+        'characters': ['http://swapi.dev/api/people/1/',
+        'http://swapi.dev/api/people/2/',
+        'http://swapi.dev/api/people/3/',
+        'http://swapi.dev/api/people/4/',
+        'http://swapi.dev/api/people/5/',
+
+
+<br>
+We need to use the request library again to get all the names.
+{% highlight python %}
+for i in range(data['count']):
+    people[i]['film_name'] = []
+    for item in people[i]['films']:
+        film = requests.get(item).json()
+        people[i]['film_name'].append(film['title'])     
+{% endhighlight %}
+
+
+<br>
+Then we transfrom the JSON data into a dataframe.
+{% highlight python %}
+df = pd.json_normalize(people)
+{% endhighlight %}
+![1]({{site.baseurl}}/images/HW5/1.png)
+*Dataframe - 1*
+![1]({{site.baseurl}}/images/HW5/2.png)
+*Dataframe - 2*
+
+# The oldest person
+BBY means Before the Battle of Yavin. If we want to find out the oldest person, we need to find the person with the biggest number before BBY. First we need to remove the `BBY` from the birth yeas. Then we can find the index of the oldest person.
+{% highlight python %}
+df_birth = df[df['birth_year'].str.contains("BBY")]
+idx = df_birth[(df_birth['birth_year']==max(df_birth['birth_year']))].index
+{% endhighlight %}
+We then use the index to find the people's name, which is `Yoda`.
+{% highlight python %}
+df_birth.loc[idx]['name'].to_list()[0]
+{% endhighlight %}
+        'Yoda'
+
+<br>
+Then we can figure out the titles of all the films she appeared in.
+{% highlight python %}
+df_birth.loc[idx]['film_name'].to_list()
+{% endhighlight %}
+        [['The Empire Strikes Back',
+        'Return of the Jedi',
+        'The Phantom Menace',
+        'Attack of the Clones',
+        'Revenge of the Sith']]
+
 
 <br>
 
-# Dataset Overview
-I use the Spotify dataset from the source above. The data comes from Spotify via the spotifyr package. Charlie Thompson, Josiah Parry, Donal Phipps, and Tom Wolff authored this package to make it easier to get either your own data or general metadata arounds songs from Spotify's API. We can use the code below to get the data and look into the info. We can see that there are 23 columns and 32833 entries.
-{% highlight python %}
-import pandas as pd
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
-all_data = pd.read_csv("https://raw.githubusercontent.com/rfordatascience
-                        /tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv")
-all_data.info()
-{% endhighlight %}
-
-        RangeIndex: 32833 entries, 0 to 32832
-        Data columns (total 23 columns):
-        #   Column                    Non-Null Count  Dtype  
-        ---  ------                    --------------  -----  
-        0   track_id                  32833 non-null  object 
-        1   track_name                32828 non-null  object 
-        2   track_artist              32828 non-null  object 
-        3   track_popularity          32833 non-null  int64  
-        4   track_album_id            32833 non-null  object 
-        5   track_album_name          32828 non-null  object 
-        6   track_album_release_date  32833 non-null  object 
-        7   playlist_name             32833 non-null  object 
-        8   playlist_id               32833 non-null  object 
-        9   playlist_genre            32833 non-null  object 
-        10  playlist_subgenre         32833 non-null  object 
-        11  danceability              32833 non-null  float64
-        12  energy                    32833 non-null  float64
-        13  key                       32833 non-null  int64  
-        14  loudness                  32833 non-null  float64
-        15  mode                      32833 non-null  int64  
-        16  speechiness               32833 non-null  float64
-        17  acousticness              32833 non-null  float64
-        18  instrumentalness          32833 non-null  float64
-        19  liveness                  32833 non-null  float64
-        20  valence                   32833 non-null  float64
-        21  tempo                     32833 non-null  float64
-        22  duration_ms               32833 non-null  int64  
-        dtypes: float64(9), int64(4), object(10)
-<!-- table or not -->
-
-<br>
-
-# Normalization
-
-## 1. First Normal Form (1NF)
-There is no composite or multi-valued attribute, so that it follow first normal form. We don't have to split composite entries. 
-
-
-## 2. Second Normal Form (2NF)
-For 2NF, we need to break partial dependencies by identifing candidate PK for each row. If there is a composite PK, see if other columns have partial dependencies. First of all find if there is a composite PK. Though it seems like `track_id` is the PK, however, if we drop the duplicates of column `track_id`, we can find that there are duplicate rows it is actually not the PK. Another two columns whose name include 'id' also can not be the primary key alone for the same reason. Hense, there must exist a composite PK. I then tries to permutate `track_id` and `track_album_id` and `playlist_id` to see if there could be a composite PK. Unfortunately, I still did not find the composite PK. The `playlist_subgenre` column called my attention then, and I found that `track_id`, `track_album_id` and `playlist_subgenre` together become a composite PK. However, it is clear that other exist partial dependecies since there are roughly three fields: track info, album info and genre. We need to split the table into smaller tables. Specifically, for each song, its feature is unique, so we need to make `danceability`, `energy` and etc belong to track table. Then we shall find that genre table actually has a composite PK which includes `track_id` and `playlist_subgenre`, and `playlist_subgenre` is the PK of genre_sub table. Thus, for 2NF, I decided to split the table as followed:
-- `track`: 'track_id' (single PK), 'track_name', 'track_artist', 'track_popularity', 
-           'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness','acousticness',
-           'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms';    
-- `album`: 'track_album_id' (single PK), 'track_album_name', 'track_album_release_date';
-- `genre`: ['track_id', 'playlist_subgenre'] (composite PK), 'playlist_name', 'playlist_id';
-- `genre_sub`: 'playlist_subgenre' (PK), 'playlist_genre';
-<br>
-And there also should be a table that connects `track`, `album` and `genre`:
-- `composite`: 'track_id', 'track_album_id', 'playlist_subgenre';
-
-
-## 3. Third Normal Form (3NF)
-For 2NF, we need to remove transitive dependencies. Based on 2NF results, we should find that there are transitive dependencies in table genre, where `playlist_name` depends on `playlist_id`. I then split them to follow the 3NF:
-- `track`: 'track_id' (single PK), 'track_name', 'track_artist', 'track_popularity', 
-           'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness','acousticness',
-           'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms';    
-- `album`: 'track_album_id' (single PK), 'track_album_name', 'track_album_release_date';
-- `genre`: ['track_id', 'playlist_subgenre'] (composite PK), 'playlist_id';
-- `playlist`: 'playlist_id' (PK), 'playlist_name';
-- `genre_sub`: 'playlist_subgenre' (PK), 'playlist_genre';
-<br>
-And there also should be a table that connects `track`, `album` and `genre`:
-- `composite`: 'track_id', 'track_album_id', 'playlist_subgenre';
-
-
-## Populate tables
-### track
-{% highlight python %}
-df_track = df.iloc[:, [0,1,2,3,11,12,13,14,15,16,17,18,19,20,21,22]].drop_duplicates()
-df_track
-{% endhighlight %}
-![1]({{site.baseurl}}/images/HW4/1.png)
-*Track*
-
-### album
-{% highlight python %}
-df_album = df.iloc[:, 4:8].drop_duplicates()
-df_album
-{% endhighlight %}
-![2]({{site.baseurl}}/images/HW4/2.png)
-*Album*
-
-### genre
-{% highlight python %}
-df_genre = df.iloc[:, [0,10,8]].drop_duplicates()
-df_genre
-{% endhighlight %}
-![3]({{site.baseurl}}/images/HW4/3.png)
-*Genre*
-
-### playlist
-{% highlight python %}
-df_playlist = df.iloc[:, [8,7]].drop_duplicates()
-df_playlist
-{% endhighlight %}
-![4]({{site.baseurl}}/images/HW4/4.png)
-*Playlist*
-
-### genre_sub
-{% highlight python %}
-df_genre_sub = df.iloc[:, [10,9]].drop_duplicates()
-df_genre_sub
-{% endhighlight %}
-![5]({{site.baseurl}}/images/HW4/5.png)
-*Genre Sub*
-
-### composite
-{% highlight python %}
-df_composite = df.iloc[:, [0,4,10]].drop_duplicates()
-df_composite
-{% endhighlight %}
-![6]({{site.baseurl}}/images/HW4/6.png)
-*Composite*
-
-
-# SQL Query
-First use sqlite3 package to store data:
-{% highlight python %}
-import sqlite3
-conn = sqlite3.connect('spotify.db')
-
-df_track.to_sql('track', conn, if_exists='replace', index = False) 
-df_album.to_sql('album', conn, if_exists='replace', index = False)
-df_genre.to_sql('genre', conn, if_exists='replace', index = False)
-df_playlist.to_sql('playlist', conn, if_exists='replace', index = False)
-df_genre_sub.to_sql('genre_sub', conn, if_exists='replace', index = False)
-df_composite.to_sql('composite', conn, if_exists='replace', index = False)
-{% endhighlight %}
-Then use an SQL query to find the names of all playlists that contain instrumentals. First of all, we find that the average `instumentalness` is 0.085 and min and max are 0.000 and 0.994. So I set the threshold to be 0.08.
-{% highlight sql %}
-%load_ext sql
-%sql sqlite:///spotify.db
-{% endhighlight %}
-{% highlight sql %}
-%%sql
-
-SELECT DISTINCT playlist_name 
-FROM playlist INNER JOIN genre
-ON playlist.playlist_id = genre.playlist_id
-INNER JOIN track
-ON genre.track_id = track.track_id
-WHERE instrumentalness > 0.08
-LIMIT 20;
-{% endhighlight %}
-![7]({{site.baseurl}}/images/HW4/7.png)
-*The names of all playlists that contain instrumentals*
-
-
-[Spotify Dataset]: https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-01-21
+[Star Wars Dataset]: https://swapi.dev/documentation
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
 
 
