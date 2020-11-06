@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "PhDs awarded in the US"
-date:   2020-11-06
+date:   2020-11-03
 image:  images/HW6/logo2.jpg
 tags:   [study]
 ---
@@ -11,7 +11,7 @@ Hello, welcome to my blog! This post will share the data manipulation of **[PhDs
 Please visit my **[GitHub][GitHub]** for more information. 
 
 # Introduction
-The Star Wars API is the world's first quantified and programmatically-formatted set of Star Wars data.
+
 
 # Consume data
 Using the below code to consume data using Star Wars API, we find that there are 82 people in total. 
