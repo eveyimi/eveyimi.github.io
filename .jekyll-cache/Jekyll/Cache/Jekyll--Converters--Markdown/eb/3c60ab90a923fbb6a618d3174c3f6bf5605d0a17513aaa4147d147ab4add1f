@@ -1,4 +1,4 @@
-I"X8<p>Hello, welcome to my blog! This post will share the data manipulation of <strong><a href="https://swapi.dev/documentation">Star Wars Dataset</a></strong>.</p>
+I"X8<p>Hello, welcome to my blog! This post will share the data manipulation of <strong>[PhDs awarded in the US][PhDs awarded in the US]</strong>.</p>
 
 <p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
 
@@ -215,6 +215,8 @@ Then we can figure out the titles of all the films she appeared in.</p>
     'Attack of the Clones',
     'Revenge of the Sith']]
 </code></pre></div></div>
+
+<p><br /></p>
 
 <!-- https://medium.com/using-specialist-business-databases/creating-a-choropleth-map-using-geopandas-and-financial-data-c76419258746 -->
 :ET
