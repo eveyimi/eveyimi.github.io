@@ -11,7 +11,13 @@ Hello, welcome to my blog! This post will share the data manipulation of **[PhDs
 Please visit my **[GitHub][GitHub]** for more information. 
 
 # Introduction
-
+<div>
+    <h1>Hello Dash</h1>
+    <div>
+        <p>Dash converts Python classes into HTML</p>
+        <p>This conversion happens behind the scenes by Dash's JavaScript front-end</p>
+    </div>
+</div>
 
 # Consume data
 Using the below code to consume data using Star Wars API, we find that there are 82 people in total. 
