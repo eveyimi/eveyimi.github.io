@@ -11,16 +11,16 @@ Hello, welcome to my blog! This post will share the data manipulation of **[PhDs
 Please visit my **[GitHub][GitHub]** for more information. 
 
 # Introduction
-<div>
-    <h1>Hello Dash</h1>
-    <div>
-        <p>Dash converts Python classes into HTML</p>
-        <p>This conversion happens behind the scenes by Dash's JavaScript front-end</p>
-    </div>
-</div>
 
-<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/3/"></iframe>
 
+
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/7/"></iframe>
+
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/9/"></iframe>
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/11/"></iframe>
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/13/"></iframe>
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/15/"></iframe>
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/17/"></iframe>
 
 # Consume data
 Using the below code to consume data using Star Wars API, we find that there are 82 people in total. 
