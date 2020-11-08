@@ -1,0 +1,362 @@
+I"��<p>Hello, welcome to my blog! This post will share the data manipulation of <strong><a href="https://ncses.nsf.gov/pubs/nsf19301/data">PhDs awarded in the US</a></strong>.</p>
+
+<p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>From website Science &amp; Engineering Doctorates we can find the Doctorate Recipients data from U.S. Universities before 2017. These tables present detailed data on the demographic characteristics, educational history, sources of financial support, and postgraduation plans of doctorate recipients. Explore the Survey of Earned Doctorates data further via NCSES’s interactive data tool. By anlyzing those datasets we can get some interesting findings.</p>
+
+<h1 id="preparations">Preparations</h1>
+<p>We should first import the necessary packages. You should register first in chart studio to get your username and api_key.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="n">pd</span><span class="p">.</span><span class="n">set_option</span><span class="p">(</span><span class="s">'display.max_columns'</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="n">pd</span><span class="p">.</span><span class="n">set_option</span><span class="p">(</span><span class="s">'display.max_rows'</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">dash</span>
+<span class="kn">import</span> <span class="nn">dash_core_components</span> <span class="k">as</span> <span class="n">dcc</span>
+<span class="kn">import</span> <span class="nn">dash_html_components</span> <span class="k">as</span> <span class="n">html</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="n">px</span>
+<span class="kn">import</span> <span class="nn">chart_studio.plotly</span> <span class="k">as</span> <span class="n">py</span>
+<span class="kn">import</span> <span class="nn">plotly.figure_factory</span> <span class="k">as</span> <span class="n">ff</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="n">go</span>
+<span class="kn">import</span> <span class="nn">chart_studio</span>
+<span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
+
+<span class="n">pd</span><span class="p">.</span><span class="n">options</span><span class="p">.</span><span class="n">plotting</span><span class="p">.</span><span class="n">backend</span> <span class="o">=</span> <span class="s">'plotly'</span>
+<span class="n">chart_studio</span><span class="p">.</span><span class="n">tools</span><span class="p">.</span><span class="n">set_credentials_file</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">''</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s">''</span><span class="p">)</span></code></pre></figure>
+
+<h1 id="visualizations">Visualizations</h1>
+
+<h2 id="table-2">Table 2</h2>
+<p>This table describes the Doctorate-granting institutions and doctorate recipients per institution: 1973–2017.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">recipient</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Doctorate recipients from U.S. colleges and universities 1958–2017.xlsx"</span><span class="p">,</span><span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">recipient</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 1 -->
+
+<h3 id="data-visualization">Data visualization</h3>
+<p>We first use two bar charts to describe the trends of recipient numbers and institution numbers seperately. We can see that both numbers increase a lot through 1973 to 2017.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="p">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">institution</span><span class="p">[</span><span class="s">'Year'</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">institution</span><span class="p">[</span><span class="s">'Total'</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s">'Total PhD recipients'</span><span class="p">,</span>
+                <span class="n">marker_color</span><span class="o">=</span><span class="s">'rgb(55, 83, 109)'</span>                     
+                <span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="p">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">institution</span><span class="p">[</span><span class="s">'Year'</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">institution</span><span class="p">[</span><span class="s">'Doctorate-granting institutions'</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s">'Doctorate-granting institutions'</span><span class="p">,</span>
+                <span class="n">marker_color</span><span class="o">=</span><span class="s">'rgb(26, 118, 255)'</span>
+                <span class="p">),</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="s">"Doctorate-granting institutions"</span><span class="p">)</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'instituion_bar'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'instituion_bar'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/17/'</span></code></pre></figure>
+
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/17/"></iframe>
+
+<p>We can also make a 3D visualization to explain the relationship between Year, Number of PhD recipients and Number of institutions.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">scatter_3d</span><span class="p">(</span><span class="n">institution</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">"Year"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">"Doctorate-granting institutions"</span><span class="p">,</span> 
+                    <span class="n">z</span><span class="o">=</span><span class="s">"Total"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s">"Mean (per institution)"</span><span class="p">,</span>
+                    <span class="n">title</span> <span class="o">=</span> <span class="s">"Doctorate-granting institutions and doctorate recipients per institution: 1973–2017"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'instituion'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/7/'</span></code></pre></figure>
+
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/7/"></iframe>
+
+<h2 id="table-12">Table 12</h2>
+<p>This table describes the Doctorate recipients, by major field of study: Selected years, 1987–2017.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">major</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Doctorate recipients, by major field of study 1987–2017.xlsx"</span><span class="p">,</span><span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">major</span> <span class="o">=</span> <span class="n">major</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">]]</span>
+<span class="n">major</span><span class="p">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Field of study"</span> <span class="p">,</span><span class="s">"1987"</span><span class="p">,</span><span class="s">"1992"</span><span class="p">,</span><span class="s">"1997"</span><span class="p">,</span><span class="s">"2002"</span><span class="p">,</span><span class="s">"2007"</span><span class="p">,</span><span class="s">"2012"</span><span class="p">,</span><span class="s">"2017"</span><span class="p">]</span>
+<span class="n">major_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Life sciences"</span><span class="p">,</span><span class="s">"Physical sciences and earth sciences"</span><span class="p">,</span>
+              <span class="s">"Mathematics and computer sciences"</span><span class="p">,</span> <span class="s">"Psychology and social sciences"</span><span class="p">,</span>
+              <span class="s">"Engineering"</span><span class="p">,</span><span class="s">"Education"</span><span class="p">,</span><span class="s">"Humanities and arts"</span><span class="p">,</span><span class="s">"Othera"</span><span class="p">]</span>
+<span class="n">major</span><span class="p">[</span><span class="s">"Major"</span><span class="p">]</span> <span class="o">=</span> <span class="s">'NA'</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">major</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">major_list</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">while</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">major</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">major_list</span><span class="p">:</span>
+            <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">j</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="o">~</span><span class="n">test</span><span class="p">[</span><span class="s">'Major'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="s">"NA"</span><span class="p">)]</span>
+<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Major'</span><span class="p">,</span> <span class="s">'Field of study'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Year'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">df1</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 2 -->
+
+<h3 id="data-visualization-1">Data visualization</h3>
+<p>We visualization the data by grouping majors and showing with the same color of sub-majors. From the line plot we can see that the Biological and biomedical science sub-major in Life sciences	major has the most number of doctorate recipients and increases the most. And the sub-major who ranks second is Psychology in major Psychology and social sciences.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">line</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">"Year"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">"Num"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">"Major"</span><span class="p">,</span>
+              <span class="n">line_group</span><span class="o">=</span><span class="s">"Field of study"</span><span class="p">,</span> <span class="n">hover_name</span><span class="o">=</span><span class="s">"Field of study"</span><span class="p">,</span>
+              <span class="n">title</span><span class="o">=</span><span class="s">'Doctorate recipients, by major field of study: 1987–2017'</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'major_field_of_study'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/9/'</span></code></pre></figure>
+
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/9/"></iframe>
+
+<h2 id="table-12-1">Table 12</h2>
+<p>This table describes the Highest educational attainment of either parent of doctorate recipients: Selected years, 1987–2017.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">highest_edu</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Highest educational attainment of either parent of doctorate recipients.xlsx"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">highest_edu</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">highest_edu</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Year'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Education'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">highest_edu</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 3 -->
+
+<h3 id="data-visualization-2">Data visualization</h3>
+<p>We visualization the data by grouping majors and showing with the same color of sub-majors. From the line plot we can see that the Biological and biomedical science sub-major in Life sciences	major has the most number of doctorate recipients and increases the most. And the sub-major who ranks second is Psychology in major Psychology and social sciences.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">highest_edu</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">"Year"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">"Num"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s">"Num"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">"Education"</span><span class="p">,</span>
+           <span class="n">hover_name</span><span class="o">=</span><span class="s">"Education"</span><span class="p">,</span> <span class="n">log_x</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">size_max</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'education_multiple'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/20/'</span></code></pre></figure>
+
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/20/"></iframe>
+
+<p>I also created a dashboard as followed and we can select different Highest educational attainment of either parent of doctorate recipients and see three pie charts once.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span> <span class="c1">#for plotting
+</span><span class="kn">import</span> <span class="nn">dash</span>
+<span class="kn">import</span> <span class="nn">dash_core_components</span> <span class="k">as</span> <span class="n">dcc</span>
+<span class="kn">import</span> <span class="nn">dash_html_components</span> <span class="k">as</span> <span class="n">html</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="n">px</span>
+<span class="kn">from</span> <span class="nn">jupyter_dash</span> <span class="kn">import</span> <span class="n">JupyterDash</span>
+<span class="kn">from</span> <span class="nn">dash.dependencies</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+
+<span class="n">external_stylesheets</span> <span class="o">=</span> <span class="p">[</span><span class="s">'https://codepen.io/chriddyp/pen/bWLwgP.css'</span><span class="p">]</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">JupyterDash</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">external_stylesheets</span><span class="o">=</span><span class="n">external_stylesheets</span><span class="p">)</span>
+
+<span class="n">highest_edu_0</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Highest educational attainment of either parent of doctorate recipients.xlsx"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">highest_edu</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">highest_edu_0</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Year'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Education'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">edu_list</span> <span class="o">=</span> <span class="n">highest_edu</span><span class="p">[</span><span class="s">'Education'</span><span class="p">].</span><span class="n">unique</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">generate_table</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">max_rows</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">html</span><span class="p">.</span><span class="n">Table</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Thead</span><span class="p">(</span>
+            <span class="n">html</span><span class="p">.</span><span class="n">Tr</span><span class="p">([</span><span class="n">html</span><span class="p">.</span><span class="n">Th</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="p">.</span><span class="n">columns</span><span class="p">])</span>
+        <span class="p">),</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Tbody</span><span class="p">([</span>
+            <span class="n">html</span><span class="p">.</span><span class="n">Tr</span><span class="p">([</span>
+                <span class="n">html</span><span class="p">.</span><span class="n">Td</span><span class="p">(</span><span class="n">dataframe</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">col</span><span class="p">])</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="p">.</span><span class="n">columns</span>
+            <span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">),</span> <span class="n">max_rows</span><span class="p">))</span>
+        <span class="p">])</span>
+    <span class="p">])</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+    <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">H4</span><span class="p">(</span><span class="s">'Highest Education options'</span><span class="p">),</span>
+        <span class="n">dcc</span><span class="p">.</span><span class="n">Dropdown</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s">'education'</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">[{</span><span class="s">'label'</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s">'value'</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">edu_list</span><span class="p">],</span>
+            <span class="n">value</span><span class="o">=</span><span class="s">'Advanced degree'</span>
+        <span class="p">),</span>    
+    <span class="p">],</span><span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s">'width'</span><span class="p">:</span> <span class="s">'30%'</span><span class="p">,</span> <span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">}),</span>
+
+    <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">H4</span><span class="p">(</span><span class="s">'Highest Education dataframe'</span><span class="p">),</span>
+        <span class="n">generate_table</span><span class="p">(</span><span class="n">highest_edu_0</span><span class="p">)</span>
+        <span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="p">{</span> <span class="s">'width'</span><span class="p">:</span> <span class="s">'40%'</span><span class="p">,</span> <span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">,</span><span class="s">'padding'</span><span class="p">:</span> <span class="s">'0 20'</span><span class="p">}),</span>
+
+        <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+            <span class="n">dcc</span><span class="p">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">'edu_graph'</span><span class="p">),</span>
+        <span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s">'width'</span><span class="p">:</span> <span class="s">'55%'</span><span class="p">,</span> <span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">,</span><span class="s">'vertical-align'</span><span class="p">:</span> <span class="s">'top'</span> <span class="p">}),</span>
+    <span class="p">],</span> <span class="n">className</span><span class="o">=</span><span class="s">"row"</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s">'edu_graph'</span><span class="p">,</span> <span class="s">'figure'</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s">'education'</span><span class="p">,</span> <span class="s">'value'</span><span class="p">)])</span>
+
+<span class="k">def</span> <span class="nf">update_graph</span><span class="p">(</span><span class="n">education</span><span class="p">):</span>
+
+    <span class="n">highest_edu2</span> <span class="o">=</span> <span class="n">highest_edu</span><span class="p">[</span><span class="n">highest_edu</span><span class="p">[</span><span class="s">'Education'</span><span class="p">]</span> <span class="o">==</span> <span class="n">education</span><span class="p">]</span>
+    
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">line</span><span class="p">(</span><span class="n">highest_edu2</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">"Year"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">"Num"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">'inline'</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="table-35">Table 35</h2>
+<p>This table describes the Doctorate recipients’ primary source of financial support, by broad field of study, sex, citizenship status, ethnicity, and race: 2017</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">finanial</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Financial support 2017.xlsx"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">finanial</span> <span class="o">=</span> <span class="n">finanial</span><span class="p">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">"Unnamed: 0"</span><span class="p">:</span> <span class="s">"Field of study"</span><span class="p">,</span> <span class="s">"Unnamed: 1"</span><span class="p">:</span> <span class="s">"Total"</span><span class="p">,</span> 
+                                    <span class="s">"Unnamed: 6"</span><span class="p">:</span><span class="s">"Hispanic or Latino"</span><span class="p">,</span> <span class="s">"Unnamed: 13"</span><span class="p">:</span><span class="s">"Ethnicity not reported"</span><span class="p">})</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">finanial</span><span class="p">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],:]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">drop</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">test</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 4 -->
+
+<p>I then divided it into three seperate datasets to see the relationship of sex, race, citizen with doctorate recipients’ primary source of financial support seperarely. <br />
+The first is between primary source of financial support and gender.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">financial_major_sex</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+<span class="n">financial_major_sex_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_sex</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> 
+                                <span class="n">var_name</span><span class="o">=</span><span class="s">'Sex'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">financial_major_sex_1</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 5 -->
+
+<p>The second is between primary source of financial support and race.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">financial_major_race</span><span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">]]</span>
+<span class="n">financial_major_race_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_race</span><span class="p">,</span> 
+                                 <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> 
+                                 <span class="n">var_name</span><span class="o">=</span><span class="s">'Race'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">financial_major_race_1</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 6 -->
+
+<p>The first is between primary source of financial support and citizen situation.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">financial_major_citizen</span><span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="n">financial_major_citizen_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_citizen</span><span class="p">,</span> 
+                                    <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> 
+                                    <span class="n">var_name</span><span class="o">=</span><span class="s">'Citizen'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">financial_major_citizen_1</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+<!-- 7 -->
+
+<h3 id="data-visualization-3">Data visualization</h3>
+<p>I then draw sunburst plot to describe their relationships. From the fisrt plot we can see that male takes more financial support than female in every source, except Own resources.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">sunburst</span><span class="p">(</span><span class="n">financial_major_sex_1</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">,</span><span class="s">'Sex'</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s">'Num'</span><span class="p">,</span> <span class="n">hover_data</span><span class="o">=</span><span class="p">[</span><span class="s">'Num'</span><span class="p">],</span>
+                  <span class="n">color_continuous_scale</span><span class="o">=</span><span class="s">'RdBu'</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'financial_major_sex'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/11/'</span></code></pre></figure>
+
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/11/"></iframe>
+<p>From the second plot we can see that white people takes most part of financial support in every source.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">sunburst</span><span class="p">(</span><span class="n">financial_major_race_1</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">,</span><span class="s">'Race'</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'financial_major_race'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/13/'</span></code></pre></figure>
+
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/13/"></iframe>
+<p>From the third plot we can see that U.S. citizen or permanent resident take most part of financial support in every source.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">sunburst</span><span class="p">(</span><span class="n">financial_major_citizen_1</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">,</span><span class="s">'Citizen'</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">py</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">'financial_major_citizen'</span><span class="p">,</span> <span class="n">auto_open</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="c1"># 'https://plotly.com/~Yi_/15/'</span></code></pre></figure>
+
+<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/15/"></iframe>
+
+<p>I also created a dashboard as followed and we can selection different doctorate recipients primary source of financial support and see three pie charts once.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span> <span class="c1">#for plotting
+</span><span class="kn">import</span> <span class="nn">dash</span>
+<span class="kn">import</span> <span class="nn">dash_core_components</span> <span class="k">as</span> <span class="n">dcc</span>
+<span class="kn">import</span> <span class="nn">dash_html_components</span> <span class="k">as</span> <span class="n">html</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="n">px</span>
+<span class="kn">from</span> <span class="nn">jupyter_dash</span> <span class="kn">import</span> <span class="n">JupyterDash</span>
+<span class="kn">from</span> <span class="nn">dash.dependencies</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+
+<span class="n">external_stylesheets</span> <span class="o">=</span> <span class="p">[</span><span class="s">'https://codepen.io/chriddyp/pen/bWLwgP.css'</span><span class="p">]</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">JupyterDash</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">external_stylesheets</span><span class="o">=</span><span class="n">external_stylesheets</span><span class="p">)</span>
+
+<span class="n">finanial</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"Financial support 2017.xlsx"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">finanial</span> <span class="o">=</span> <span class="n">finanial</span><span class="p">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">"Unnamed: 0"</span><span class="p">:</span> <span class="s">"Field of study"</span><span class="p">,</span> <span class="s">"Unnamed: 1"</span><span class="p">:</span> <span class="s">"Total"</span><span class="p">,</span> 
+                                    <span class="s">"Unnamed: 6"</span><span class="p">:</span><span class="s">"Hispanic or Latino"</span><span class="p">,</span> <span class="s">"Unnamed: 13"</span><span class="p">:</span><span class="s">"Ethnicity not reported"</span><span class="p">})</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">finanial</span><span class="p">.</span><span class="n">iloc</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],:]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">drop</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">financial_major_sex</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+<span class="n">financial_major_sex_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_sex</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Sex'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">financial_major_race</span><span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">]]</span>
+<span class="n">financial_major_race_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_race</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Race'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+<span class="n">financial_major_citizen</span><span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">iloc</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="n">financial_major_citizen_1</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">melt</span><span class="p">(</span><span class="n">financial_major_citizen</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s">'Citizen'</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+
+<span class="n">field_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="s">"Field of study"</span><span class="p">])</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+    <span class="n">html</span><span class="p">.</span><span class="n">H4</span><span class="p">(</span><span class="s">"Doctorate recipients primary source of financial support"</span><span class="p">),</span>
+    <span class="n">html</span><span class="p">.</span><span class="n">H6</span><span class="p">(</span><span class="s">"by broad field of study, sex, citizenship status, ethnicity, and race: 2017"</span><span class="p">),</span>
+    
+    <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+            <span class="n">dcc</span><span class="p">.</span><span class="n">Dropdown</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="s">'field'</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="p">[{</span><span class="s">'label'</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s">'value'</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">field_list</span><span class="p">],</span>
+                <span class="n">value</span><span class="o">=</span><span class="s">'Teaching assistantships'</span>
+            <span class="p">),</span>
+        <span class="p">],</span><span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s">'width'</span><span class="p">:</span> <span class="s">'50%'</span><span class="p">,</span> <span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">}),</span>
+    <span class="p">]),</span>
+
+    <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Label</span><span class="p">(</span><span class="s">"By gender"</span><span class="p">),</span>
+        <span class="n">dcc</span><span class="p">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">'g1'</span><span class="p">),</span>
+    <span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s">'width'</span><span class="p">:</span> <span class="s">'50%'</span><span class="p">,</span><span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">,</span> <span class="s">'padding'</span><span class="p">:</span> <span class="s">'0 20'</span><span class="p">}),</span>
+
+    <span class="n">html</span><span class="p">.</span><span class="n">Div</span><span class="p">([</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Label</span><span class="p">(</span><span class="s">"By race"</span><span class="p">),</span>
+        <span class="n">dcc</span><span class="p">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">'g2'</span><span class="p">),</span>
+        <span class="n">html</span><span class="p">.</span><span class="n">Label</span><span class="p">(</span><span class="s">"By citizen"</span><span class="p">),</span>
+        <span class="n">dcc</span><span class="p">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">'g3'</span><span class="p">),</span>
+    <span class="p">],</span> <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s">'display'</span><span class="p">:</span> <span class="s">'inline-block'</span><span class="p">,</span> <span class="s">'width'</span><span class="p">:</span> <span class="s">'50%'</span><span class="p">,</span><span class="s">'vertical-align'</span><span class="p">:</span> <span class="s">'top'</span><span class="p">}),</span>
+<span class="p">])</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s">'g1'</span><span class="p">,</span> <span class="s">'figure'</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s">'field'</span><span class="p">,</span> <span class="s">'value'</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">update_graph1</span><span class="p">(</span><span class="n">option</span><span class="p">):</span>
+    <span class="n">sex</span> <span class="o">=</span> <span class="n">financial_major_sex_1</span><span class="p">[</span><span class="n">financial_major_sex_1</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">]</span> <span class="o">==</span> <span class="n">option</span><span class="p">]</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">pie</span><span class="p">(</span><span class="n">sex</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s">'Sex'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s">'g2'</span><span class="p">,</span> <span class="s">'figure'</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s">'field'</span><span class="p">,</span> <span class="s">'value'</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">update_graph2</span><span class="p">(</span><span class="n">option</span><span class="p">):</span>
+    <span class="n">race</span> <span class="o">=</span> <span class="n">financial_major_race_1</span><span class="p">[</span><span class="n">financial_major_race_1</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">]</span> <span class="o">==</span> <span class="n">option</span><span class="p">]</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">pie</span><span class="p">(</span><span class="n">race</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s">'Race'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s">'g3'</span><span class="p">,</span> <span class="s">'figure'</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s">'field'</span><span class="p">,</span> <span class="s">'value'</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">update_graph3</span><span class="p">(</span><span class="n">option</span><span class="p">):</span>
+    <span class="n">citizen</span> <span class="o">=</span> <span class="n">financial_major_citizen_1</span><span class="p">[</span><span class="n">financial_major_citizen_1</span><span class="p">[</span><span class="s">'Field of study'</span><span class="p">]</span> <span class="o">==</span> <span class="n">option</span><span class="p">]</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="p">.</span><span class="n">pie</span><span class="p">(</span><span class="n">citizen</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="s">'Citizen'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s">'Num'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">'inline'</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<p>First select a source.
+<!-- 8 --></p>
+
+<p>Then have interactive operations.
+<!-- 8 --></p>
+
+:ET

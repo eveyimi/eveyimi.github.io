@@ -12,235 +12,382 @@ Please visit my **[GitHub][GitHub]** for more information.
 
 # Introduction
 
+From website Science & Engineering Doctorates we can find the Doctorate Recipients data from U.S. Universities before 2017. These tables present detailed data on the demographic characteristics, educational history, sources of financial support, and postgraduation plans of doctorate recipients. Explore the Survey of Earned Doctorates data further via NCSES's interactive data tool. By anlyzing those datasets we can get some interesting findings.
 
+# Preparations
+We should first import the necessary packages. You should register first in chart studio to get your username and api_key.
+{% highlight python %}
+import pandas as pd
+import numpy as np
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+import matplotlib.pyplot as plt
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.express as px
+import chart_studio.plotly as py
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
+import chart_studio
+from plotly.subplots import make_subplots
 
+pd.options.plotting.backend = 'plotly'
+chart_studio.tools.set_credentials_file(username='', api_key='')
+{% endhighlight %}
+
+# Visualizations
+
+## Table 2
+This table describes the Doctorate-granting institutions and doctorate recipients per institution: 1973–2017.
+{% highlight python %}
+recipient = pd.read_excel("Doctorate recipients from U.S. colleges and universities 1958–2017.xlsx",skiprows=[0,1,2])
+recipient.head(10)
+{% endhighlight %}
+
+<!-- 1 -->
+
+### Data visualization
+We first use two bar charts to describe the trends of recipient numbers and institution numbers seperately. We can see that both numbers increase a lot through 1973 to 2017. 
+{% highlight python %}
+fig = make_subplots(rows=1, cols=2)
+
+fig.add_trace(go.Bar(x=institution['Year'],
+                y=institution['Total'],
+                name='Total PhD recipients',
+                marker_color='rgb(55, 83, 109)'                     
+                ),row=1, col=1)
+fig.add_trace(go.Bar(x=institution['Year'],
+                y=institution['Doctorate-granting institutions'],
+                name='Doctorate-granting institutions',
+                marker_color='rgb(26, 118, 255)'
+                ), row=1, col=2)
+
+fig.update_layout(height=400, width=1000, title_text="Doctorate-granting institutions")
+py.plot(fig, filename='instituion_bar', auto_open=True)
+fig.show()
+py.plot(fig, filename='instituion_bar', auto_open=True)
+# 'https://plotly.com/~Yi_/17/'
+{% endhighlight %}
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/17/"></iframe>
+
+We can also make a 3D visualization to explain the relationship between Year, Number of PhD recipients and Number of institutions.
+{% highlight python %}
+fig = px.scatter_3d(institution, x="Year", y="Doctorate-granting institutions", 
+                    z="Total", size="Mean (per institution)",
+                    title = "Doctorate-granting institutions and doctorate recipients per institution: 1973–2017")
+fig.show()
+py.plot(fig, filename='instituion', auto_open=True)
+# 'https://plotly.com/~Yi_/7/'
+{% endhighlight %}
 <iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/7/"></iframe>
 
+
+## Table 12
+This table describes the Doctorate recipients, by major field of study: Selected years, 1987–2017.
+{% highlight python %}
+major = pd.read_excel("Doctorate recipients, by major field of study 1987–2017.xlsx",skiprows=[0,1,2,3])
+major = major.iloc[:,[0,1,3,5,7,9,11,13]]
+major.columns = ["Field of study" ,"1987","1992","1997","2002","2007","2012","2017"]
+major_list = ["Life sciences","Physical sciences and earth sciences",
+              "Mathematics and computer sciences", "Psychology and social sciences",
+              "Engineering","Education","Humanities and arts","Othera"]
+major["Major"] = 'NA'
+test = major
+for i in range(test.shape[0]):
+    if test.iloc[i,0] in major_list:
+        print(test.iloc[i,0])
+        j = i+1
+        while j<major.shape[0] and test.iloc[j,0] not in major_list:
+            test.iloc[j,8] = test.iloc[i,0]
+            j+=1
+df = test[~test['Major'].str.contains("NA")]
+df1 = pd.melt(df, id_vars=['Major', 'Field of study'], var_name='Year', value_name='Num')
+df1.head(10)
+{% endhighlight %}
+
+<!-- 2 -->
+
+### Data visualization
+We visualization the data by grouping majors and showing with the same color of sub-majors. From the line plot we can see that the Biological and biomedical science sub-major in Life sciences	major has the most number of doctorate recipients and increases the most. And the sub-major who ranks second is Psychology in major Psychology and social sciences.
+{% highlight python %}
+fig = px.line(df1, x="Year", y="Num", color="Major",
+              line_group="Field of study", hover_name="Field of study",
+              title='Doctorate recipients, by major field of study: 1987–2017')
+fig.show()
+py.plot(fig, filename='major_field_of_study', auto_open=True)
+# 'https://plotly.com/~Yi_/9/'
+{% endhighlight %}
 <iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/9/"></iframe>
+
+
+## Table 12
+This table describes the Highest educational attainment of either parent of doctorate recipients: Selected years, 1987–2017.
+{% highlight python %}
+highest_edu = pd.read_excel("Highest educational attainment of either parent of doctorate recipients.xlsx", skiprows=[0,1,2])
+highest_edu = pd.melt(highest_edu, id_vars=['Year'], var_name='Education', value_name='Num')
+highest_edu.head(10)
+{% endhighlight %}
+
+<!-- 3 -->
+
+### Data visualization
+I drew a sctter plot to visulize the change of highest educational attainment of either parent of doctorate recipients with year changing. The size is based on number and color is based on groups. We can see that the top number of highest education transfer from High school or less to advanced degree, which is a result of the increase of education level of the whole society. Meanwhile, Bachelor's degree and Some college are roughly the same or have small fluctuation.
+{% highlight python %}
+fig = px.scatter(highest_edu, x="Year", y="Num", size="Num", color="Education",
+           hover_name="Education", log_x=False, size_max=30)
+fig.show()
+py.plot(fig, filename='education_multiple', auto_open=True)
+# 'https://plotly.com/~Yi_/20/'
+{% endhighlight %}
+<iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/20/"></iframe>
+
+I also created a dashboard as followed which will display the data table and also a line plot of the change of highest educational attainment with years changing. We can select different Highest educational attainment of either parent of doctorate recipients.
+{% highlight python %}
+import pandas as pd
+import matplotlib.pyplot as plt #for plotting
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.express as px
+from jupyter_dash import JupyterDash
+from dash.dependencies import Input, Output
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = JupyterDash(__name__, external_stylesheets=external_stylesheets)
+
+highest_edu_0 = pd.read_excel("Highest educational attainment of either parent of doctorate recipients.xlsx", skiprows=[0,1,2])
+highest_edu = pd.melt(highest_edu_0, id_vars=['Year'], var_name='Education', value_name='Num')
+edu_list = highest_edu['Education'].unique()
+
+def generate_table(dataframe, max_rows=10):
+    return html.Table([
+        html.Thead(
+            html.Tr([html.Th(col) for col in dataframe.columns])
+        ),
+        html.Tbody([
+            html.Tr([
+                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+            ]) for i in range(min(len(dataframe), max_rows))
+        ])
+    ])
+
+app.layout = html.Div([
+    html.Div([
+        html.H4('Highest Education options'),
+        dcc.Dropdown(
+            id='education',
+            options=[{'label': i, 'value': i} for i in edu_list],
+            value='Advanced degree'
+        ),    
+    ],style={'width': '30%', 'display': 'inline-block'}),
+
+    html.Div([
+        html.Div([
+        html.H4('Highest Education dataframe'),
+        generate_table(highest_edu_0)
+        ], style={ 'width': '40%', 'display': 'inline-block','padding': '0 20'}),
+
+        html.Div([
+            dcc.Graph(id='edu_graph'),
+        ], style={'width': '55%', 'display': 'inline-block','vertical-align': 'top' }),
+    ], className="row"),
+])
+
+@app.callback(
+    Output('edu_graph', 'figure'),
+    [Input('education', 'value')])
+
+def update_graph(education):
+
+    highest_edu2 = highest_edu[highest_edu['Education'] == education]
+    
+    fig = px.line(highest_edu2, x="Year", y="Num")
+    return fig
+
+if __name__ == '__main__':
+    app.run_server(mode='inline',debug=True)
+
+{% endhighlight %}
+
+First select an educational attainment.
+<!-- 10 -->
+
+Then have interactive operations.
+<!-- 11 -->
+
+## Table 35
+This table describes the Doctorate recipients' primary source of financial support, by broad field of study, sex, citizenship status, ethnicity, and race: 2017
+{% highlight python %}
+finanial = pd.read_excel("Financial support 2017.xlsx", skiprows=[0,1,2,3,4])
+finanial = finanial.rename(columns={"Unnamed: 0": "Field of study", "Unnamed: 1": "Total", 
+                                    "Unnamed: 6":"Hispanic or Latino", "Unnamed: 13":"Ethnicity not reported"})
+test = finanial.iloc[[0,1,2,3,4,5,6],:]
+for i in range(1, test.shape[0]):
+    for j in range(1, test.shape[1]):
+        test.iloc[i, j] = int((test.iloc[0, j] * test.iloc[i, j]) / 100)
+test = test.drop([0])
+test.head(10)
+{% endhighlight %}
+
+<!-- 4 -->
+
+I then divided it into three seperate datasets to see the relationship of sex, race, citizen with doctorate recipients' primary source of financial support seperarely. <br>
+The first is between primary source of financial support and gender.
+{% highlight python %}
+financial_major_sex = test.iloc[:,[0,2,3]]
+financial_major_sex_1 = pd.melt(financial_major_sex, id_vars=['Field of study'], 
+                                var_name='Sex', value_name='Num')
+financial_major_sex_1.head(10)
+{% endhighlight %}
+
+<!-- 5 -->
+
+The second is between primary source of financial support and race.
+{% highlight python %}
+financial_major_race= test.iloc[:,[0, 6,7,8,9,10,11,12,13]]
+financial_major_race_1 = pd.melt(financial_major_race, 
+                                 id_vars=['Field of study'], 
+                                 var_name='Race', value_name='Num')
+financial_major_race_1.head(10)
+{% endhighlight %}
+
+<!-- 6 -->
+
+The first is between primary source of financial support and citizen situation.
+{% highlight python %}
+financial_major_citizen= test.iloc[:,[0,4,5]]
+financial_major_citizen_1 = pd.melt(financial_major_citizen, 
+                                    id_vars=['Field of study'], 
+                                    var_name='Citizen', value_name='Num')
+financial_major_citizen_1.head(10)
+{% endhighlight %}
+
+<!-- 7 -->
+
+### Data visualization
+I then draw sunburst plot to describe their relationships. From the fisrt plot we can see that male takes more financial support than female in every source, except Own resources.
+{% highlight python %}
+fig = px.sunburst(financial_major_sex_1, path=['Field of study','Sex'], values='Num',
+                  color='Num', hover_data=['Num'],
+                  color_continuous_scale='RdBu')
+fig.show()
+py.plot(fig, filename='financial_major_sex', auto_open=True)
+# 'https://plotly.com/~Yi_/11/'
+{% endhighlight %}
 <iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/11/"></iframe>
+From the second plot we can see that white people takes most part of financial support in every source.
+{% highlight python %}
+fig = px.sunburst(financial_major_race_1, path=['Field of study','Race'], values='Num')
+fig.show()
+py.plot(fig, filename='financial_major_race', auto_open=True)
+# 'https://plotly.com/~Yi_/13/'
+{% endhighlight %}
 <iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/13/"></iframe>
+From the third plot we can see that U.S. citizen or permanent resident take most part of financial support in every source.
+{% highlight python %}
+fig = px.sunburst(financial_major_citizen_1, path=['Field of study','Citizen'], values='Num')
+fig.show()
+py.plot(fig, filename='financial_major_citizen', auto_open=True)
+# 'https://plotly.com/~Yi_/15/'
+{% endhighlight %}
 <iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/15/"></iframe>
-<iframe width="750" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/17/"></iframe>
 
-# Consume data
-Using the below code to consume data using Star Wars API, we find that there are 82 people in total. 
-
+I also created a dashboard as followed and we can selection different doctorate recipients primary source of financial support and see three pie charts at once.
 {% highlight python %}
-base_url = 'https://swapi.dev/api/people'
-resp = requests.get(base_url)
-data = resp.json()
+import pandas as pd
+import matplotlib.pyplot as plt #for plotting
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.express as px
+from jupyter_dash import JupyterDash
+from dash.dependencies import Input, Output
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = JupyterDash(__name__, external_stylesheets=external_stylesheets)
+
+finanial = pd.read_excel("Financial support 2017.xlsx", skiprows=[0,1,2,3,4])
+finanial = finanial.rename(columns={"Unnamed: 0": "Field of study", "Unnamed: 1": "Total", 
+                                    "Unnamed: 6":"Hispanic or Latino", "Unnamed: 13":"Ethnicity not reported"})
+test = finanial.iloc[[0,1,2,3,4,5,6],:]
+for i in range(1, test.shape[0]):
+    for j in range(1, test.shape[1]):
+        test.iloc[i, j] = int((test.iloc[0, j] * test.iloc[i, j]) / 100)
+test = test.drop([0])
+
+financial_major_sex = test.iloc[:,[0,2,3]]
+financial_major_sex_1 = pd.melt(financial_major_sex, id_vars=['Field of study'], var_name='Sex', value_name='Num')
+financial_major_race= test.iloc[:,[0, 6,7,8,9,10,11,12,13]]
+financial_major_race_1 = pd.melt(financial_major_race, id_vars=['Field of study'], var_name='Race', value_name='Num')
+financial_major_citizen= test.iloc[:,[0,4,5]]
+financial_major_citizen_1 = pd.melt(financial_major_citizen, id_vars=['Field of study'], var_name='Citizen', value_name='Num')
+
+field_list = list(test["Field of study"])
+
+app.layout = html.Div([
+    html.H4("Doctorate recipients primary source of financial support"),
+    html.H6("by broad field of study, sex, citizenship status, ethnicity, and race: 2017"),
+    
+    html.Div([
+        html.Div([
+            dcc.Dropdown(
+                id='field',
+                options=[{'label': i, 'value': i} for i in field_list],
+                value='Teaching assistantships'
+            ),
+        ],style={'width': '50%', 'display': 'inline-block'}),
+    ]),
+
+    html.Div([
+        html.Label("By gender"),
+        dcc.Graph(id='g1'),
+    ], style={'width': '50%','display': 'inline-block', 'padding': '0 20'}),
+
+    html.Div([
+        html.Label("By race"),
+        dcc.Graph(id='g2'),
+        html.Label("By citizen"),
+        dcc.Graph(id='g3'),
+    ], style={'display': 'inline-block', 'width': '50%','vertical-align': 'top'}),
+])
+
+@app.callback(
+    Output('g1', 'figure'),
+    [Input('field', 'value')])
+def update_graph1(option):
+    sex = financial_major_sex_1[financial_major_sex_1['Field of study'] == option]
+    fig = px.pie(sex, names='Sex', values='Num')
+    return fig
+
+@app.callback(
+    Output('g2', 'figure'),
+    [Input('field', 'value')])
+def update_graph2(option):
+    race = financial_major_race_1[financial_major_race_1['Field of study'] == option]
+    fig = px.pie(race, names='Race', values='Num')
+    return fig
+
+@app.callback(
+    Output('g3', 'figure'),
+    [Input('field', 'value')])
+def update_graph3(option):
+    citizen = financial_major_citizen_1[financial_major_citizen_1['Field of study'] == option]
+    fig = px.pie(citizen, names='Citizen', values='Num')
+    return fig
+
+if __name__ == '__main__':
+    app.run_server(mode='inline',debug=True)
+
 {% endhighlight %}
 
-        {'count': 82,
-        'next': 'http://swapi.dev/api/people/?page=2',
-        'previous': None,
-        'results': [{'name': 'Luke Skywalker',
-        'height': '172',
-        'mass': '77',
-        'hair_color': 'blond',
-        'skin_color': 'fair',
-        'eye_color': 'blue',
-        'birth_year': '19BBY',
-        'gender': 'male',
-        'homeworld': 'http://swapi.dev/api/planets/1/',
-        'films': ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/6/'],
-        'species': [],
-        'vehicles': ['http://swapi.dev/api/vehicles/14/',
-        'http://swapi.dev/api/vehicles/30/'],
-        'starships': ['http://swapi.dev/api/starships/12/',
-        'http://swapi.dev/api/starships/22/'],
-        'created': '2014-12-09T13:50:51.644000Z',
-        'edited': '2014-12-20T21:17:56.891000Z',
-        'url': 'http://swapi.dev/api/people/1/'},
-        {'name': 'C-3PO',
-        'height': '167',
-        'mass': '75',
-        'hair_color': 'n/a',
-        'skin_color': 'gold',
-        'eye_color': 'yellow',
-        'birth_year': '112BBY',
-        'gender': 'n/a',
-        'homeworld': 'http://swapi.dev/api/planets/1/',
-        'films': ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/4/',
-        'http://swapi.dev/api/films/5/',
-        'http://swapi.dev/api/films/6/'],
-        'species': ['http://swapi.dev/api/species/2/'],
-        'vehicles': [],
-        'starships': [],
-        'created': '2014-12-10T15:10:51.357000Z',
-        'edited': '2014-12-20T21:17:50.309000Z',
-        'url': 'http://swapi.dev/api/people/2/'},
-        ... ...
+First select a source.
+<!-- 8 -->
+
+Then have interactive operations.
+<!-- 9 -->
 
 
-<br>
-Then, try to consume them one by one until we get all 82 people data and use a list to store all the JSON data.
-{% highlight python %}
-people = []
-count = 0 # we will stop consuming until the count is 82
-i = 1
-while True:
-    r = requests.get(os.path.join(base_url, str(i))).json()
-    if r == {'detail': 'Not found'}:
-        i += 1
-        continue
-    people.append(r)
-    count += 1
-    i += 1
-    if count == data['count']:
-        break 
-{% endhighlight %}
-
-        [{'name': 'Luke Skywalker',
-        'height': '172',
-        'mass': '77',
-        'hair_color': 'blond',
-        'skin_color': 'fair',
-        'eye_color': 'blue',
-        'birth_year': '19BBY',
-        'gender': 'male',
-        'homeworld': 'http://swapi.dev/api/planets/1/',
-        'films': ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/6/'],
-        'species': [],
-        'vehicles': ['http://swapi.dev/api/vehicles/14/',
-        'http://swapi.dev/api/vehicles/30/'],
-        'starships': ['http://swapi.dev/api/starships/12/',
-        'http://swapi.dev/api/starships/22/'],
-        'created': '2014-12-09T13:50:51.644000Z',
-        'edited': '2014-12-20T21:17:56.891000Z',
-        'url': 'http://swapi.dev/api/people/1/'},
-        {'name': 'C-3PO',
-        'height': '167',
-        'mass': '75',
-        'hair_color': 'n/a',
-        'skin_color': 'gold',
-        'eye_color': 'yellow',
-        'birth_year': '112BBY',
-        'gender': 'n/a',
-        'homeworld': 'http://swapi.dev/api/planets/1/',
-        'films': ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/4/',
-        'http://swapi.dev/api/films/5/',
-        'http://swapi.dev/api/films/6/'],
-        'species': ['http://swapi.dev/api/species/2/'],
-        'vehicles': [],
-        'starships': [],
-        'created': '2014-12-10T15:10:51.357000Z',
-        'edited': '2014-12-20T21:17:50.309000Z',
-        'url': 'http://swapi.dev/api/people/2/'},
-        {'name': 'R2-D2',
-        'height': '96',
-        'mass': '32',
-        'hair_color': 'n/a',
-        'skin_color': 'white, blue',
-        'eye_color': 'red',
-        'birth_year': '33BBY',
-        'gender': 'n/a',
-        'homeworld': 'http://swapi.dev/api/planets/8/',
-        'films': ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/4/',
-        'http://swapi.dev/api/films/5/',
-        'http://swapi.dev/api/films/6/'],
-        'species': ['http://swapi.dev/api/species/2/'],
-        'vehicles': [],
-        'starships': [],
-        'created': '2014-12-10T15:11:50.376000Z',
-        'edited': '2014-12-20T21:17:50.311000Z',
-        'url': 'http://swapi.dev/api/people/3/'},
-        ... ...
-
-
-<br>
-We are required to provide the name of films each people appeared in. The raw people data only contains the URL of the films as below.
-{% highlight python %}
-people[0]['films']
-{% endhighlight %}
-        ['http://swapi.dev/api/films/1/',
-        'http://swapi.dev/api/films/2/',
-        'http://swapi.dev/api/films/3/',
-        'http://swapi.dev/api/films/6/']
-
-
-<br>
-And each film API contains the below information, taking the first people as an example.
-{% highlight python %}
-requests.get(people[0]['films'][0]).json()
-{% endhighlight %}
-        {'title': 'A New Hope',
-        'episode_id': 4,
-        'opening_crawl': "It is a period of civil war.\r\nRebel spaceships, striking\r\nfrom a hidden base, have won\r\ntheir first victory against\r\nthe evil Galactic Empire.\r\n\r\nDuring the battle, Rebel\r\nspies managed to steal secret\r\nplans to the Empire's\r\nultimate weapon, the DEATH\r\nSTAR, an armored space\r\nstation with enough power\r\nto destroy an entire planet.\r\n\r\nPursued by the Empire's\r\nsinister agents, Princess\r\nLeia races home aboard her\r\nstarship, custodian of the\r\nstolen plans that can save her\r\npeople and restore\r\nfreedom to the galaxy....",
-        'director': 'George Lucas',
-        'producer': 'Gary Kurtz, Rick McCallum',
-        'release_date': '1977-05-25',
-        'characters': ['http://swapi.dev/api/people/1/',
-        'http://swapi.dev/api/people/2/',
-        'http://swapi.dev/api/people/3/',
-        'http://swapi.dev/api/people/4/',
-        'http://swapi.dev/api/people/5/',
-
-
-<br>
-We need to use the request library again to get all the names.
-{% highlight python %}
-for i in range(data['count']):
-    people[i]['film_name'] = []
-    for item in people[i]['films']:
-        film = requests.get(item).json()
-        people[i]['film_name'].append(film['title'])     
-{% endhighlight %}
-
-
-<br>
-Then we transfrom the JSON data into a dataframe.
-{% highlight python %}
-df = pd.json_normalize(people)
-{% endhighlight %}
-![1]({{site.baseurl}}/images/HW5/1.png)
-*Dataframe - 1*
-![1]({{site.baseurl}}/images/HW5/2.png)
-*Dataframe - 2*
-
-# The oldest person
-BBY means Before the Battle of Yavin. If we want to find out the oldest person, we need to find the person with the biggest number before BBY. First we need to remove the `BBY` from the birth yeas. Then we can find the index of the oldest person.
-{% highlight python %}
-df_birth = df[df['birth_year'].str.contains("BBY")]
-idx = df_birth[(df_birth['birth_year']==max(df_birth['birth_year']))].index
-{% endhighlight %}
-We then use the index to find the people's name, which is `Yoda`.
-{% highlight python %}
-df_birth.loc[idx]['name'].to_list()[0]
-{% endhighlight %}
-        'Yoda'
-
-<br>
-Then we can figure out the titles of all the films she appeared in.
-{% highlight python %}
-df_birth.loc[idx]['film_name'].to_list()
-{% endhighlight %}
-        [['The Empire Strikes Back',
-        'Return of the Jedi',
-        'The Phantom Menace',
-        'Attack of the Clones',
-        'Revenge of the Sith']]
-
-
-<br>
-
-[Star Wars Dataset]: https://swapi.dev/documentation
+[PhDs awarded in the US]: https://ncses.nsf.gov/pubs/nsf19301/data
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
 
-
-<!-- https://medium.com/using-specialist-business-databases/creating-a-choropleth-map-using-geopandas-and-financial-data-c76419258746 -->
