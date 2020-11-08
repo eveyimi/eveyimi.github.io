@@ -45,7 +45,7 @@ recipient = pd.read_excel("Doctorate recipients from U.S. colleges and universit
 recipient.head(10)
 {% endhighlight %}
 
-<!-- 1 -->
+![1]({{site.baseurl}}/images/HW6/1.png)
 
 ### Data visualization
 We first use two bar charts to describe the trends of recipient numbers and institution numbers seperately. We can see that both numbers increase a lot through 1973 to 2017. 
@@ -106,7 +106,7 @@ df1 = pd.melt(df, id_vars=['Major', 'Field of study'], var_name='Year', value_na
 df1.head(10)
 {% endhighlight %}
 
-<!-- 2 -->
+![2]({{site.baseurl}}/images/HW6/2.png)
 
 ### Data visualization
 We visualization the data by grouping majors and showing with the same color of sub-majors. From the line plot we can see that the Biological and biomedical science sub-major in Life sciences	major has the most number of doctorate recipients and increases the most. And the sub-major who ranks second is Psychology in major Psychology and social sciences.
@@ -121,7 +121,7 @@ py.plot(fig, filename='major_field_of_study', auto_open=True)
 <iframe width="900" height="500" frameborder="0" scrolling="no" src="//plotly.com/~Yi_/9/"></iframe>
 
 
-## Table 12
+## Table 34
 This table describes the Highest educational attainment of either parent of doctorate recipients: Selected years, 1987–2017.
 {% highlight python %}
 highest_edu = pd.read_excel("Highest educational attainment of either parent of doctorate recipients.xlsx", skiprows=[0,1,2])
@@ -129,7 +129,7 @@ highest_edu = pd.melt(highest_edu, id_vars=['Year'], var_name='Education', value
 highest_edu.head(10)
 {% endhighlight %}
 
-<!-- 3 -->
+![3]({{site.baseurl}}/images/HW6/3.png)
 
 ### Data visualization
 I drew a sctter plot to visulize the change of highest educational attainment of either parent of doctorate recipients with year changing. The size is based on number and color is based on groups. We can see that the top number of highest education transfer from High school or less to advanced degree, which is a result of the increase of education level of the whole society. Meanwhile, Bachelor's degree and Some college are roughly the same or have small fluctuation.
@@ -211,10 +211,10 @@ if __name__ == '__main__':
 {% endhighlight %}
 
 First select an educational attainment.
-<!-- 10 -->
+![10]({{site.baseurl}}/images/HW6/10.png)
 
 Then have interactive operations.
-<!-- 11 -->
+![11]({{site.baseurl}}/images/HW6/11.png)
 
 ## Table 35
 This table describes the Doctorate recipients' primary source of financial support, by broad field of study, sex, citizenship status, ethnicity, and race: 2017
@@ -230,7 +230,7 @@ test = test.drop([0])
 test.head(10)
 {% endhighlight %}
 
-<!-- 4 -->
+![4]({{site.baseurl}}/images/HW6/4.png)
 
 I then divided it into three seperate datasets to see the relationship of sex, race, citizen with doctorate recipients' primary source of financial support seperarely. <br>
 The first is between primary source of financial support and gender.
@@ -241,7 +241,7 @@ financial_major_sex_1 = pd.melt(financial_major_sex, id_vars=['Field of study'],
 financial_major_sex_1.head(10)
 {% endhighlight %}
 
-<!-- 5 -->
+![5]({{site.baseurl}}/images/HW6/5.png)
 
 The second is between primary source of financial support and race.
 {% highlight python %}
@@ -252,7 +252,7 @@ financial_major_race_1 = pd.melt(financial_major_race,
 financial_major_race_1.head(10)
 {% endhighlight %}
 
-<!-- 6 -->
+![6]({{site.baseurl}}/images/HW6/6.png)
 
 The first is between primary source of financial support and citizen situation.
 {% highlight python %}
@@ -263,7 +263,7 @@ financial_major_citizen_1 = pd.melt(financial_major_citizen,
 financial_major_citizen_1.head(10)
 {% endhighlight %}
 
-<!-- 7 -->
+![7]({{site.baseurl}}/images/HW6/7.png)
 
 ### Data visualization
 I then draw sunburst plot to describe their relationships. From the fisrt plot we can see that male takes more financial support than female in every source, except Own resources.
@@ -382,11 +382,10 @@ if __name__ == '__main__':
 {% endhighlight %}
 
 First select a source.
-<!-- 8 -->
+![8]({{site.baseurl}}/images/HW6/8.png)
 
 Then have interactive operations.
-<!-- 9 -->
-
+![9]({{site.baseurl}}/images/HW6/9.png)
 
 [PhDs awarded in the US]: https://ncses.nsf.gov/pubs/nsf19301/data
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
