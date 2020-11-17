@@ -256,6 +256,7 @@ for image_batch, labels_batch in train_ds:
     break
 {% endhighlight %}
 (32, 224, 224, 3)
+<br>
 (32,)
 
 ### Run the classifier on a batch of images
@@ -348,9 +349,9 @@ history = model.fit(train_ds, epochs=2,
                     callbacks=[batch_stats_callback])
 {% endhighlight %}
         Epoch 1/2
-        32/32 [==============================] - 8s 239ms/step - loss: 0.1042 - acc: 1.0000
+        32/32 [=========================] - 8s 239ms/step - loss: 0.1042 - acc: 1.0000
         Epoch 2/2
-        32/32 [==============================] - 8s 236ms/step - loss: 0.0410 - acc: 1.0000
+        32/32 [=========================] - 8s 236ms/step - loss: 0.0410 - acc: 1.0000
 
 <br>
 
