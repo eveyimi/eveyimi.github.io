@@ -1,0 +1,36 @@
+I"™	<p>Hello, welcome to my blog! This post will share the data manipulation of <strong><a href="https://www.insectimages.org/index.cfm">Image Classification</a></strong>.</p>
+
+<p>Please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Insects classification.</p>
+
+<h1 id="preparations">Preparations</h1>
+<p>We should first import the necessary packages. For the first model, I basically follow the official guide from tensorflow.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">PIL</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="n">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span></code></pre></figure>
+
+<h1 id="insects-classification">Insects classification</h1>
+<h2 id="load-data">load data</h2>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="n">train_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="p">.</span><span class="n">Path</span><span class="p">(</span><span class="s">"insects/train"</span><span class="p">)</span>
+<span class="n">test_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="p">.</span><span class="n">Path</span><span class="p">(</span><span class="s">"insects/test"</span><span class="p">)</span></code></pre></figure>
+
+<p>We can then take a look of the insects in train and test directories.</p>
+
+<p><img src="/images/HW7/train.png" alt="1" /></p>
+
+<p><img src="/images/HW7/test.png" alt="2" /></p>
+
+<h1 id="visualizations">Visualizations</h1>
+
+:ET
