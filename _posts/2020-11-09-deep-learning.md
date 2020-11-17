@@ -127,6 +127,8 @@ model.summary()
         Non-trainable params: 0
         _________________________________________________________________
 
+<br>
+
 ## Train the model
 {% highlight python %}
 epochs=10
@@ -158,6 +160,8 @@ history = model.fit(
         Epoch 10/10
         32/32 [==============================] - 8s 254ms/step - loss: 0.0259 - accuracy: 0.9961 - val_loss: 0.0339 - val_accuracy: 0.9944
 
+<br>
+
 ## Visualize training results
 {% highlight python %}
 acc = history.history['accuracy']
@@ -182,6 +186,8 @@ plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
 plt.show()
 {% endhighlight %}
+
+![3]({{site.baseurl}}/images/HW7/viz1.png)
 
 [Image Classification]: https://www.insectimages.org/index.cfm
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
