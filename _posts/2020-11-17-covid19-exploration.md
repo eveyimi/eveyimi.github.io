@@ -15,10 +15,14 @@ To give researchers and the public rapid access to studies on COVID-19 in other 
 
 We developed a dashboard to display the information related to COVID-19 related clinical trials, including data visualization of world trials and U.S. trials, clustering tirals by similarity and predicting trials' opening status. Our audience of visualization parts could be any people who are curious about COVID-19 related clinical trials even without professional knowledge since all plots are intuitive and easy to understand. But for the clustering part and predicting part, our audience needs to have some knowledge of statistics. We all know that clinical research is a crucial step to overcome the virus. The purpose of our project is to give people a basic understanding of COVID-19 related clinical research and to increase confidence for everyone to defeat the virus.
 
+My main contribution:
+
+You can find all code in our repository.
+
 # Data Cleaning
 Based on my teammates' basic data cleaning process, I further cleaned the data to make it comply with SQLite3 schema.
 
-## 1. Get data
+### 1. Get data
 The first step I did was to get the data and take a deep look of the data. Basically, my teammates did the following steps.
 - selected columns of interests
 - cleaned date columns into standard format with month and year
@@ -26,40 +30,65 @@ The first step I did was to get the data and take a deep look of the data. Basic
 - transferred all letters to upper cases
 - replaced "nan" and "NaN" to `np.nan`
 
-Based on their effort, I found that there are still fields cleaning could be optimized and thus further cleaned the data to make them efficient and easy to use.
+Based on their effort, I found that there are still fields cleaning steps could be optimized and thus further cleaned the data to make them efficient and easy to use.
 
-## 2. Clean Study Design and Intervention
-First, I found that there are two field are JSON-like, which is defined by myself Strictly speaking, they are not JSON data, but they looked like JSON data. In each cell of them, several pairs of key and value exist, which are separated by vertical bars. Here are examples of `Study Design` and `Intervention`.
-    # Study Design
-    'ALLOCATION: RANDOMIZED|INTERVENTION MODEL: SINGLE GROUP ASSIGNMENT|MASKING: TRIPLE (PARTICIPANT, CARE PROVIDER, INVESTIGATOR)|PRIMARY PURPOSE: TREATMENT'
-    # Intervention
-    'DRUG: DUVELISIB|PROCEDURE: PERIPHERAL BLOOD DRAW|DRUG: PLACEBO'
+### 2. Clean Study Design and Intervention
+- **Study Design**: explains the investigative methods or strategies used in the clinical study. It also provides other Information, such as study type, estimated or actual enrollment, study start and completion dates, and official study title.
+- **Intervention**: for interventional studies, this section explains the type of intervention/treatment participants receive, what the dosage is for drugs, and how long the participants receive the intervention; for observational studies, this section explains the participant groups that are observed and any treatments or exposures that are of interest in the study.
 
+First, I found that there are two fields are JSON-like, which is defined by myself. Strictly speaking, they are not JSON data, but they looked like JSON data. In each cell of them, several pairs of key and value exist, which are mapped by colon and separated by vertical bars. I wrote two funtions which were applied to each row of `Study Design` and `Intervention` to get the pair of key and value, save the data into real JSON format and then transfer the JSON data into dataframe. Below are examples of `Study Design` and `Intervention`. We can see that there are ALLOCATION, INTERVENTION MODEL, MASKING and PRIMARY PURPOSE keys inside this `Study Design` cell. There are also DRUG and PROCEDURE keys inside this `Intervention` cell.
+            
+        # Study Design
+        'ALLOCATION: RANDOMIZED|INTERVENTION MODEL: SINGLE GROUP ASSIGNMENT|MASKING: TRIPLE (PARTICIPANT, CARE PROVIDER, INVESTIGATOR)|PRIMARY PURPOSE: TREATMENT'
+        # Intervention
+        'DRUG: DUVELISIB|PROCEDURE: PERIPHERAL BLOOD DRAW
 
-## 3. Create a SQLite3 schema following 3NF
+<br>
 
-#### Handle one field with multiple information
-1. outcome_measures, 
-2. sponsor_collaborators, 
-3. funded_bys, 
-4. study_type
+Actually, there are more keys inside `Study Design` and `Intervention`, which is a difficulty here to not miss any of them. My strategy is to first extract all possibles keys and then for each cell find out if any key exists. Eventually, I successfully expand those them and get dataframes. Below is the `Study Design` dataframe. We can find that it is super sparse.
 
-#### Handle JSON-like field
-1. Study Design
-2. Intervention
+![]({{site.baseurl}}/images/final/study-design-df.jpg)
 
-#### Handle Other fields
-replace NA
+### 3. Create a SQLite3 schema following 3NF
+As introduced in previous post of spotify data normalization, third normal form (3NF) is a database schema design approach for relational databases which uses normalizing principles to reduce the duplication of data, avoid data anomalies, ensure referential integrity, and simplify data management. Therefore, to make our data easy to manipulate, I created a SQLite3 schema following 3NF.
 
-## 3. Set up SQL server
+First, I checked and confirmed that there are no duplication and the `NCT Number` is the primary key of the data. I have handled JSON-like fields (`Study Design` and `Intervention`). Those two table can be store individually in SQL with `NCT Number` as PK. However, for the following four fields, `Outcome measures`, `Sponsor collaborators`, `Funded bys`, `Study type`, there are multiple values inside one cell, separated by vertical bars. To keep columns atomic, we have to further process them.
 
-<!-- code -->
+#### Handle multi-valued attributes
+- **Outcome measures**: describes the measurements that are used to determine the effects of intervention or treatment on participants. Types of outcome measures include primary outcome measures, secondary outcome measures, and other pre-specified measures. For observational studies, this section explains the participant groups that are observed and any treatments or exposures that are of interest in the study.
+- **Sponsor collaborators**: the study sponsors, which are concrete institution names in this dataset
+- **Funded bys**: clinical studies can be funded, by pharmaceutical companies, academic medical centers, voluntary groups, and other organizations, in addition to Federal agencies such as the National Institutes of Health, the U.S. Department of Defense, and the U.S. Department of Veterans Affairs.
+- **Study type**: describes the nature of a clinical study. Study types include interventional studies (also called clinical trials), observational studies (including patient registries), and expanded access.
 
+For example, we could have a 'OTHER\|NIH' in `Funded bys` field. 
+![]({{site.baseurl}}/images/final/bys1.png)
+*Before*
+What I did was to extract those four columns with `NCT Number` separately (i.e. have four tables) and split the columns by vertical bars (i.e. long term). Then, for each of those four tables, we cannot have the `NCT Number` as the primary key anymore, since we will have duplicate PK. Under this situation, the `NCT Number` and `Funded bys` together will be a composite PK and others three tables are similar. We can easily use SQL quries to extrat data.
+
+![]({{site.baseurl}}/images/final/bys2.png)
+*After*
+
+Other useful fields are store together in one table. 3NF is satisfied without partial dependency or transitive dependency. All tables are saved in SQLite3.
+{% highlight sql %}
+import sqlite3
+conn = sqlite3.connect('covid_trials.db')
+trial_info.to_sql('trial_info', conn, if_exists='replace', index=False)
+study_designs.to_sql('study_designs', conn, if_exists='replace', index=False)
+interventions.to_sql('interventions', conn, if_exists='replace', index=False)
+outcome_measures.to_sql('outcome_measures', conn, if_exists='replace', index=False)
+sponsor_collaborators.to_sql('sponsor_collaborators', conn, if_exists='replace', index=False)
+funded_bys.to_sql('funded_bys', conn, if_exists='replace', index=False)
+study_type.to_sql('study_type', conn, if_exists='replace', index=False)
+{% endhighlight %}
 
 # Exploratory Data Analysis
-Initially, we all did EDA seperately to explore data and get basic sense ourselves.
+Initially, we all did EDA seperately to explore data and get basic sense ourselves. I  explore two fields rough.
 1. Study design
+
+
 2. duration
+
+
 
 # Openning Status classification
 In the beginning, I plan to predict if the clinical trial will succeed or not based on variable `status`. I thought it would be really meaningful to have an idea of this most important sense. But when I looked into the data, I found that the data is highly imbalanced--it indicates that only one trial is successful, whose status is 'APPROVED FOR MARKETING'.
