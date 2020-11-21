@@ -6,7 +6,7 @@ image:  images/final/logo.jpeg
 tags:   [study]
 ---
 
-Hello, welcome to my blog! This post will explore COVID-19 related clinical trials. If you are interested, please visit my **[GitHub][GitHub]** for more information. 
+Hello, welcome to my blog! This post will explore COVID-19 related clinical trials, which is the final project of **[BIOSTAT 823][BIOSTAT 823]**. If you are interested, please visit my **[GitHub][GitHub]** for more information. 
 
 # Introduction
 
@@ -93,7 +93,7 @@ study_type.to_sql('study_type', conn, if_exists='replace', index=False)
 {% endhighlight %}
 
 # Openning Status classification
-In the beginning, I planned to predict if the clinical trial will succeed or not based on variable `Status`. It would be really meaningful to have an idea of this most important sense. But when I looked into the data, I found that the data is highly imbalanced--it indicates that only one trial is successful, whose status is 'APPROVED FOR MARKETING'.
+`Status` indicates the current stage of a clinical study and whether it is or will be open for enrollment. In the beginning, I planned to predict if the clinical trial will succeed or not based on variable `Status`. It would be really meaningful to have an idea about that. But when I looked into the data, I found that the data is highly imbalanced--it indicates that only one trial is successful, whose status is 'APPROVED FOR MARKETING'. 
 
 - **Status**:
 
@@ -109,7 +109,7 @@ In the beginning, I planned to predict if the clinical trial will succeed or not
         TERMINATED                   30
         WITHDRAWN                    60
 
-<br>
+According to official documentation, the status can be divided into open studies and closed studies. AVAILABLE, NOT YET RECRUITING and RECRUITING belong to open category. There are also category SUSPENDED, which obviously indicate the trial failed. This data imbalance can not be handled by normal operation. Thus we decided to classify and predict the status into binary categories, which are open and closed (also referred as 'active' sometimes). And it is feasible to predict success and failure when we have more data in the future.
 
 ## 1. Data preprocessing
 
@@ -188,16 +188,23 @@ We also allow users to select a classifier and display the corresponding plots. 
 ![]({{site.baseurl}}/images/final/d4.png)
 *Select a classifier*
 
-# Reflection and Conclusion
+# Reflection
+- **Team work**
+<br>
+This is a team project. For a team project, the most important thing is to discuss together, clarify the purpose, make plans and schedules. I am lucky to have highly cooperative teammates and to follow the schedules. However, there are problems we could have avoid. For example, to notify teammates as soon as possible while individual plans changing due to irresistible factors. And to set up unified working environment at the beginning to avoid errors when integrating code.
 
-enviroment imcompatible
-github usage
+- **Explore tools**
+<br>
+When I was working on this project, I discovered that there are many useful tools that provide a very simple and convenient interface. Trying out new tools will not only save time but also broaden my mind.
+
+- **Insight**
+<br>
+The important thing is not how fancy tools and diagrams are used, but how deep impression and in-depth thinking can be brought to the audience.
 
 
-
-
-
+**In short, thank my instructor, TA and teammates!**
 
 
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
 [notebook]: http://people.duke.edu/~ccc14/bios-823-2020/index.html
+[BIOSTAT 823]: https://github.com/cliburn/bios-823-2020
