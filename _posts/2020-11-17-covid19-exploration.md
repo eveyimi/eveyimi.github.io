@@ -172,13 +172,24 @@ Below is a table of top important features I got from Extreme Gradient Boosting 
 It might not have much practical use to predict the openning status of clinical trials, which only matters to the clinical volunteers. However, I believe that after we have more data, we can predict whether one trail will succeed or not. Meanwhile, I also went through the Machine Learning process completely in this project, which improved my ability to process data and build models, allowing me to apply more useful and interesting tools.
 
 # Building dashboard
-Each of us built our own streamlit dashboard page. I found it is really a code-light tool to build dashboard, compared to Dash. 
-## 1. Drawing Plots
+Each of us built our own streamlit dashboard page. I found it is really a code-light tool to build dashboard, compared to Dash. Below is the overview of my page. All plots are drawn with plotly and support interaction. You can have a try on the dashboard we deployed.
+![]({{site.baseurl}}/images/final/d1.png)
+*Predicting trials' activity status page*
 
-## 2. Combining to Streamlit
+In my Predicting trials' activity status page, I have the first visualization part, which displays the comparsion amoung all classifiers. We allow users to select one metric to see the performance difference between models. The metrics include Accuracy, AUC, Recall, Precision, F1, Kappa, MCC and Time. Compared to the previous image, we can see that though Extreme Gradient Boosting classifier has best Accuracy, its Recall is not the highest.
+![]({{site.baseurl}}/images/final/d2.png)
+*Select a metric*
 
+In the second part, I display the Performance Plots mentioned before, including ROC Curve, Precision-Recall Curve and Confusion Matrix. 
+![]({{site.baseurl}}/images/final/d3.png)
+*Plots*
+
+We also allow users to select a classifier and display the corresponding plots. For example, here we select Extreme Gradient Boosting classifier which has the best performance in Accuracy. Compared to default Random Forrest classifier, it does have a better performance.
+![]({{site.baseurl}}/images/final/d4.png)
+*Select a classifier*
 
 # Reflection and Conclusion
+
 enviroment imcompatible
 github usage
 

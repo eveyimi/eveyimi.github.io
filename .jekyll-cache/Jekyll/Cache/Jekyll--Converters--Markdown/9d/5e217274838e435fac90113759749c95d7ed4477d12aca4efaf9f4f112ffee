@@ -1,0 +1,192 @@
+I"K\<p>Hello, welcome to my blog! This post will explore COVID-19 related clinical trials. If you are interested, please visit my <strong><a href="https://github.com/eveyimi/eveyimi.github.io">GitHub</a></strong> for more information.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<h3 id="1-basic-information">1. Basic information</h3>
+<ul>
+  <li><strong>Project name</strong>: Exploring COVID-19 related clinical trials in the U.S. and Beyond</li>
+  <li><strong>Team members</strong>: Oana Enache, Yi Mi, Yue Han</li>
+  <li><strong>Repository link</strong>: https://github.com/oena/bios823_final_project</li>
+  <li><strong>Dashboard link</strong>: https://share.streamlit.io/oena/bios823_final_project/dashboard/app_main.py</li>
+</ul>
+
+<h3 id="2-product-and-purpose">2. Product and Purpose</h3>
+<p>COVID-19 is ravaging the world. At this critical moment, clinical trials are crucial to overcome the virus. It is the basis for treatment of patients and vaccine development. We developed a dashboard to display the information related to COVID-19 related clinical trials, including data visualization of world trials and U.S. trials, clustering tirals by similarity and predicting trials’ opening status.The purpose of our project is to give people a basic understanding of COVID-19 related clinical research and to increase confidence for everyone to defeat the virus. Our audience of visualization parts could be any people who are curious about COVID-19 related clinical trials even without professional knowledge since all plots are intuitive and easy to understand. But for the clustering part and predicting part, our audience needs to have some knowledge of statistics.</p>
+
+<h3 id="3-dataset">3. Dataset</h3>
+<p>The dataset is from ClinicalTrials.gov, a database of privately and publicly funded clinical studies conducted around the world. The dataset includes ongoing and completed COVID-19 studies listed on the World Health Organization’s International Clinical Trials Registry Platform (WHO ICTRP), in order to give researchers and the public rapid access to studies on COVID-19 studies. Information in the WHO ICTRP comes from clinical trial databases maintained by other countries or regions of the world.</p>
+
+<h3 id="4-my-contributions-and-skillsets">4. My contributions and skillsets</h3>
+<p>I mainly cleaned data, did exploratory data analyses, set up SQL server, built models and visualizations and set up my page on streamlit dashboard.</p>
+
+<p>The skillsets I demonstrate in this project include Data Science (<code class="language-plaintext highlighter-rouge">pandas</code>, <code class="language-plaintext highlighter-rouge">numpy</code>, <code class="language-plaintext highlighter-rouge">pandas_profiling</code>, <code class="language-plaintext highlighter-rouge">missingno</code>), SQL (<code class="language-plaintext highlighter-rouge">sqlite3</code>), Machine Learning (<code class="language-plaintext highlighter-rouge">sklearn</code>, <code class="language-plaintext highlighter-rouge">pycaret</code>, <code class="language-plaintext highlighter-rouge">yellowbrick</code>, <code class="language-plaintext highlighter-rouge">skopt</code>), Visualization (<code class="language-plaintext highlighter-rouge">plotly</code>, <code class="language-plaintext highlighter-rouge">matplotlib</code>), Dashboard (<code class="language-plaintext highlighter-rouge">streamlit</code>), several classifiers and functional programming in Python.</p>
+
+<p>In this post, I will elaborate on my contribution to this project and the technology I used. All code can be found in our repository.</p>
+
+<h1 id="data-cleaning">Data Cleaning</h1>
+<p>Based on my teammates’ basic data cleaning process, I further cleaned the data to make it comply with SQLite3 schema.</p>
+
+<h3 id="1-get-data">1. Get data</h3>
+<p>The first step I did was to get the data and take a deep look of the data. Basically, my teammates did the following steps.</p>
+<ul>
+  <li>selected columns of interests</li>
+  <li>cleaned date columns into standard format with month and year</li>
+  <li>cleaned locations columns, including country, city of state, instituions</li>
+  <li>transferred all letters to upper cases</li>
+  <li>replaced “nan” and “NaN” to <code class="language-plaintext highlighter-rouge">np.nan</code></li>
+</ul>
+
+<p>Based on their effort, I found that there are still fields cleaning steps could be optimized and thus further cleaned the data to make them efficient and easy to use.</p>
+
+<h3 id="2-clean-study-design-and-intervention">2. Clean Study Design and Intervention</h3>
+<ul>
+  <li><strong>Study Design</strong>: explains the investigative methods or strategies used in the clinical study. It also provides other Information, such as study type, estimated or actual enrollment, study start and completion dates, and official study title.</li>
+  <li><strong>Intervention</strong>: for interventional studies, this section explains the type of intervention/treatment participants receive, what the dosage is for drugs, and how long the participants receive the intervention; for observational studies, this section explains the participant groups that are observed and any treatments or exposures that are of interest in the study.</li>
+</ul>
+
+<p>First, I found that there are two fields are JSON-like, which is defined by myself. Strictly speaking, they are not JSON data, but they looked like JSON data. In each cell of them, several pairs of key and value exist, which are mapped by colon and separated by vertical bars. I wrote two funtions which were applied to each row of <code class="language-plaintext highlighter-rouge">Study Design</code> and <code class="language-plaintext highlighter-rouge">Intervention</code> to get the pair of key and value, save the data into real JSON format and then transfer the JSON data into dataframe. Below are examples of <code class="language-plaintext highlighter-rouge">Study Design</code> and <code class="language-plaintext highlighter-rouge">Intervention</code>. We can see that there are ALLOCATION, INTERVENTION MODEL, MASKING and PRIMARY PURPOSE keys inside this <code class="language-plaintext highlighter-rouge">Study Design</code> cell. There are also DRUG and PROCEDURE keys inside this <code class="language-plaintext highlighter-rouge">Intervention</code> cell.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # Study Design
+    'ALLOCATION: RANDOMIZED|INTERVENTION MODEL: SINGLE GROUP ASSIGNMENT|MASKING: TRIPLE (PARTICIPANT, CARE PROVIDER, INVESTIGATOR)|PRIMARY PURPOSE: TREATMENT'
+    # Intervention
+    'DRUG: DUVELISIB|PROCEDURE: PERIPHERAL BLOOD DRAW
+</code></pre></div></div>
+
+<p><br /></p>
+
+<p>Actually, there are more keys inside <code class="language-plaintext highlighter-rouge">Study Design</code> and <code class="language-plaintext highlighter-rouge">Intervention</code>, which is a difficulty here to not miss any of them. My strategy is to first extract all possibles keys and then for each cell find out if any key exists. Eventually, I successfully expand those them and get dataframes. Below is the <code class="language-plaintext highlighter-rouge">Study Design</code> dataframe. We can find that it is super sparse.</p>
+
+<p><img src="/images/final/study-design-df.jpg" alt="" /></p>
+
+<h3 id="3-create-a-sqlite3-schema-following-3nf">3. Create a SQLite3 schema following 3NF</h3>
+<p>As introduced in previous post of spotify data normalization, third normal form (3NF) is a database schema design approach for relational databases which uses normalizing principles to reduce the duplication of data, avoid data anomalies, ensure referential integrity, and simplify data management. Therefore, to make our data easy to manipulate, I created a SQLite3 schema following 3NF.</p>
+
+<p>First, I checked and confirmed that there are no duplication and the <code class="language-plaintext highlighter-rouge">NCT Number</code> is the primary key of the data. I have handled JSON-like fields (<code class="language-plaintext highlighter-rouge">Study Design</code> and <code class="language-plaintext highlighter-rouge">Intervention</code>). Those two table can be store individually in SQL with <code class="language-plaintext highlighter-rouge">NCT Number</code> as PK. However, for the following four fields, <code class="language-plaintext highlighter-rouge">Outcome measures</code>, <code class="language-plaintext highlighter-rouge">Sponsor collaborators</code>, <code class="language-plaintext highlighter-rouge">Funded bys</code>, <code class="language-plaintext highlighter-rouge">Study type</code>, there are multiple values inside one cell, separated by vertical bars. To keep columns atomic, we have to further process them.</p>
+
+<h4 id="handle-multi-valued-attributes">Handle multi-valued attributes</h4>
+<ul>
+  <li><strong>Outcome measures</strong>: describes the measurements that are used to determine the effects of intervention or treatment on participants. Types of outcome measures include primary outcome measures, secondary outcome measures, and other pre-specified measures. For observational studies, this section explains the participant groups that are observed and any treatments or exposures that are of interest in the study.</li>
+  <li><strong>Sponsor collaborators</strong>: the study sponsors, which are concrete institution names in this dataset</li>
+  <li><strong>Funded bys</strong>: clinical studies can be funded, by pharmaceutical companies, academic medical centers, voluntary groups, and other organizations, in addition to Federal agencies such as the National Institutes of Health, the U.S. Department of Defense, and the U.S. Department of Veterans Affairs.</li>
+  <li><strong>Study type</strong>: describes the nature of a clinical study. Study types include interventional studies (also called clinical trials), observational studies (including patient registries), and expanded access.</li>
+</ul>
+
+<p>For example, we could have a ‘OTHER|NIH’ in <code class="language-plaintext highlighter-rouge">Funded bys</code> field. 
+<img src="/images/final/before.png" alt="" />
+<em>Before</em></p>
+
+<p>What I did was to extract those four columns with <code class="language-plaintext highlighter-rouge">NCT Number</code> separately (i.e. have four tables) and split the columns by vertical bars (i.e. long term). Then, for each of those four tables, we cannot have the <code class="language-plaintext highlighter-rouge">NCT Number</code> as the primary key anymore, since we will have duplicate PK. Under this situation, the <code class="language-plaintext highlighter-rouge">NCT Number</code> and <code class="language-plaintext highlighter-rouge">Funded bys</code> together will be a composite PK and others three tables are similar. We can easily use SQL quries to extrat data.</p>
+
+<p><img src="/images/final/after.png" alt="" />
+<em>After</em></p>
+
+<p>Other useful fields are store together in one table. 3NF is satisfied without partial dependency or transitive dependency. All tables are saved in SQLite3.</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">import</span> <span class="n">sqlite3</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="p">.</span><span class="k">connect</span><span class="p">(</span><span class="s1">'covid_trials.db'</span><span class="p">)</span>
+<span class="n">trial_info</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'trial_info'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">study_designs</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'study_designs'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">interventions</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'interventions'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">outcome_measures</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'outcome_measures'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">sponsor_collaborators</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'sponsor_collaborators'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">funded_bys</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'funded_bys'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span>
+<span class="n">study_type</span><span class="p">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">'study_type'</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">'replace'</span><span class="p">,</span> <span class="k">index</span><span class="o">=</span><span class="k">False</span><span class="p">)</span></code></pre></figure>
+
+<h1 id="openning-status-classification">Openning Status classification</h1>
+<p>In the beginning, I planned to predict if the clinical trial will succeed or not based on variable <code class="language-plaintext highlighter-rouge">Status</code>. It would be really meaningful to have an idea of this most important sense. But when I looked into the data, I found that the data is highly imbalanced–it indicates that only one trial is successful, whose status is ‘APPROVED FOR MARKETING’.</p>
+
+<ul>
+  <li>
+    <p><strong>Status</strong>:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ACTIVE, NOT RECRUITING      262
+  APPROVED FOR MARKETING        1
+  AVAILABLE                    22
+  COMPLETED                   460
+  ENROLLING BY INVITATION     125
+  NO LONGER AVAILABLE           4
+  NOT YET RECRUITING          870
+  RECRUITING                 1992
+  SUSPENDED                    23
+  TERMINATED                   30
+  WITHDRAWN                    60
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="1-data-preprocessing">1. Data preprocessing</h2>
+
+<h4 id="further-cleaning">Further cleaning</h4>
+<p>I listed further data clearning steps as followed:</p>
+<ol>
+  <li><strong>Age</strong>: extracted the age phases in paranthesis and replaced the missing data as “OTHERS”; made the type as “category”</li>
+  <li><strong>Gender</strong>: replaced the missing data as “All”; made the type as “category”</li>
+  <li><strong>Phases</strong>: the original phases data may include two phases in one cell, I extracted the highest phase of each cell; made the type as “category”</li>
+  <li><strong>Study Type</strong>: it describes the nature of a clinical study, including interventional studies (also called clinical trials), observational studies (including patient registries), and expanded access. Some “expanded access” are followed by redundent details, and thus I removed the details and made the type as “category”</li>
+  <li><strong>Results</strong>: it indicates if the trail has result or not; made the type as “category”</li>
+  <li><strong>Funded bys</strong>: seperated the founded bys into four columns (‘INDUDTRY’, ‘NIH’, ‘OTHER’, ‘U.S. FED’) and each is a binary variable, indicating if the trial is funded by each of them or not</li>
+  <li><strong>Locations</strong>: replaced the missing data as “OTHER”; made the type as “category”</li>
+  <li><strong>Duration</strong>: calculated the duration of the trials by months</li>
+  <li><strong>Status</strong>: classified the status into active and not active two categories; made the type as “category”</li>
+</ol>
+
+<h4 id="imputation-and-handling-outliers">Imputation and Handling outliers</h4>
+<p>There are some missing data in quantative variables <strong>Enrollment</strong> and <strong>Duration</strong>. I first fixed the missing data by imputing the mean and then removed the outliers which exceeded three times of the standard deviation.</p>
+
+<h4 id="handling-imbalance-data">Handling imbalance data</h4>
+<p>After finishing all the steps above, I applied <code class="language-plaintext highlighter-rouge">get_dummies</code> on X and splited the data into train and test datasets. Next I handled imbalanced data. Even if I decided to classify the active status rather than predicting the success and failure, the data is still imbalanced. After comparing the performance of over-sample, de-sample and the combination of them, I found that over-sample outputs the best performance, which was then used to handle our imbalanced data.</p>
+
+<h2 id="2-modelling">2. Modelling</h2>
+<p>I first tried some traditional classifiers, such as Random Forest classifier and Logistic Regression classifier. When I tried to tune hyperparameters, I carefully read through the <strong><a href="http://people.duke.edu/~ccc14/bios-823-2020/index.html">notebook</a></strong> of BIOSTAT 823 and found a really fancy tool, which is <code class="language-plaintext highlighter-rouge">pycaret</code>. <code class="language-plaintext highlighter-rouge">pycaret</code> provides nice and easy to use APIs for modelling.</p>
+
+<h4 id="comparing-and-tuning-models">Comparing and tuning models</h4>
+<p>I used pycaret to compare models and tuned models. After setting up, we can call <code class="language-plaintext highlighter-rouge">compare_models</code> and provide the metric we want to sort based on. I Here I sort the models by Accuracy.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">best_model</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">sort</span> <span class="o">=</span> <span class="s">'Accuracy'</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/images/final/model1.png" alt="" />
+<em>Comparing models</em></p>
+
+<p>We can see that Extreme Gradient Boosting classifier has the best performance on Accuracy, AUC and Kappa. We can create and tune the xgboost by the code below.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">clf</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="s">'xgboost'</span><span class="p">)</span>
+<span class="n">tuned_clf</span> <span class="o">=</span> <span class="n">tune_model</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span></code></pre></figure>
+
+<p><img src="/images/final/model2.png" alt="" />
+<em>Creating and tuning xgboost model</em></p>
+
+<p>I got the idea here to display model comparison on our dashboard.</p>
+
+<h4 id="performance-plots">Performance Plots</h4>
+<p>In order to get more intuitive of model performance, I draw three different plots, ROC Curve, Precision-Recall Curve and Confusion Matrix. You can see the plots in next section.</p>
+
+<p>An ROC curve (receiver operating characteristic curve) is a graph showing the performance of a classification model at all classification thresholds. This curve plots two parameters: True Positive Rate. False Positive Rate. An ROC curve plots TPR vs. FPR at different classification thresholds. Lowering the classification threshold classifies more items as positive, thus increasing both False Positives and True Positives. 
+<cite>Google Machine Learning Crash Course.</cite></p>
+
+<p>The Precision-Recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision relates to a low false positive rate, and high recall relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).
+<cite>scikit-learn.</cite></p>
+
+<p>Confusion Matrix is an NxN table that summarizes how successful a classification model’s predictions were; that is, the correlation between the label and the model’s classification. One axis of a confusion matrix is the label that the model predicted, and the other axis is the actual label. N represents the number of classes. In a binary classification problem, N=2. <cite>Google Machine Learning Crash Course.</cite></p>
+
+<h2 id="3-insights">3. Insights</h2>
+<p>Below is a table of top important features I got from Extreme Gradient Boosting classifier. We can see that the most influential feature is observational study type. And if the trial has no result yet, it will be highly possible that it is still openning and active. 
+<img src="/images/final/feature.png" alt="" />
+<em>Top important features</em>
+It might not have much practical use to predict the openning status of clinical trials, which only matters to the clinical volunteers. However, I believe that after we have more data, we can predict whether one trail will succeed or not. Meanwhile, I also went through the Machine Learning process completely in this project, which improved my ability to process data and build models, allowing me to apply more useful and interesting tools.</p>
+
+<h1 id="building-dashboard">Building dashboard</h1>
+<p>Each of us built our own streamlit dashboard page. I found it is really a code-light tool to build dashboard, compared to Dash. Below is the overview of my page.
+<img src="/images/final/d1.png" alt="" />
+<em>Predicting trials’ activity status page</em></p>
+
+<p>In my Predicting trials’ activity status page, I have the first visualization part, which displays the comparsion amoung all models. We allow users to select one metric to see the performance difference between models. The metrics include Accuracy, AUC, Recall, Precision, F1, Kappa, MCC and Time.</p>
+
+<p><img src="/images/final/d2.png" alt="" />
+<em>Select metric</em></p>
+<h1 id="reflection-and-conclusion">Reflection and Conclusion</h1>
+<p>enviroment imcompatible
+github usage</p>
+
+:ET
