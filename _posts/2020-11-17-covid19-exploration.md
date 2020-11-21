@@ -131,10 +131,8 @@ There are some missing data in quantative variables **Enrollment** and **Duratio
 #### Handling imbalance data
 After finishing all the steps above, I applied `get_dummies` on X and splited the data into train and test datasets. Next I handled imbalanced data. Even if I decided to classify the active status rather than predicting the success and failure, the data is still imbalanced. After comparing the performance of over-sample, de-sample and the combination of them, I found that over-sample outputs the best performance, which was then used to handle our imbalanced data.
 
-
-
 ## 2. Modelling
-I first and tried some traditional classifiers, such as Random Forest classifier and Logistic Regression classifier. When I tried to tune hyperparameters, I carefully read through the **[notebook][notebook]** of BIOSTAT 823 and found a really fancy tool, which is `pycaret`. `pycaret` provides nice and easy to use APIs for modelling.
+I first tried some traditional classifiers, such as Random Forest classifier and Logistic Regression classifier. When I tried to tune hyperparameters, I carefully read through the **[notebook][notebook]** of BIOSTAT 823 and found a really fancy tool, which is `pycaret`. `pycaret` provides nice and easy to use APIs for modelling.
 
 #### Comparing and tuning models
 I used pycaret to compare models and tuned models. After setting up, we can call `compare_models` and provide the metric we want to sort based on. I Here I sort the models by Accuracy.
@@ -157,7 +155,7 @@ tuned_clf = tune_model(clf)
 I got the idea here to display model comparison on our dashboard.
 
 #### Performance Plots
-In order to get more intuitive of model performance, I draw three different plots, ROC Curve, Precision-Recall Curve and Confusion Matrix.
+In order to get more intuitive of model performance, I draw three different plots, ROC Curve, Precision-Recall Curve and Confusion Matrix. You can see the plots in next section.
 
 An ROC curve (receiver operating characteristic curve) is a graph showing the performance of a classification model at all classification thresholds. This curve plots two parameters: True Positive Rate. False Positive Rate. An ROC curve plots TPR vs. FPR at different classification thresholds. Lowering the classification threshold classifies more items as positive, thus increasing both False Positives and True Positives. 
 <cite>Google Machine Learning Crash Course.</cite>
@@ -168,14 +166,13 @@ The Precision-Recall curve shows the tradeoff between precision and recall for d
 Confusion Matrix is an NxN table that summarizes how successful a classification model's predictions were; that is, the correlation between the label and the model's classification. One axis of a confusion matrix is the label that the model predicted, and the other axis is the actual label. N represents the number of classes. In a binary classification problem, N=2. <cite>Google Machine Learning Crash Course.</cite>
 
 ## 3. Insights
-
-
-Most important variables
-future plan in predicting probability of success
-
+Below is a table of top important features I got from Extreme Gradient Boosting classifier. We can see that the most influential feature is observational study type. And if the trial has no result yet, it will be highly possible that it is still openning and active. 
+![]({{site.baseurl}}/images/final/feature.png)
+*Top important features*
+It might not have much practical use to predict the openning status of clinical trials, which only matters to the clinical volunteers. However, I believe that after we have more data, we can predict whether one trail will succeed or not. Meanwhile, I also went through the Machine Learning process completely in this project, which improved my ability to process data and build models, allowing me to apply more useful and interesting tools.
 
 # Building dashboard
-Each of us built our own dashboard page. 
+Each of us built our own streamlit dashboard page. I found it is really a code-light tool to build dashboard, compared to Dash. 
 ## 1. Drawing Plots
 
 ## 2. Combining to Streamlit
