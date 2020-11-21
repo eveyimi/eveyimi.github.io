@@ -10,14 +10,24 @@ Hello, welcome to my blog! This post will explore COVID-19 related clinical tria
 
 # Introduction
 
-The following are ongoing and completed COVID-19 studies listed on the World Health Organization's International Clinical Trials Registry Platform (WHO ICTRP). Information in the WHO ICTRP comes from clinical trial databases maintained by other countries or regions of the world. COVID-19 studies listed on ClinicalTrials.gov are not included in the list below, but can be found using our search for COVID-19.
-To give researchers and the public rapid access to studies on COVID-19 in other countries, ClinicalTrials.gov will update this list weekly. You can also access the information directly from the WHO ICTRP.
+### 1. Basic information
+- **Project name**: Exploring COVID-19 related clinical trials in the U.S. and Beyond
+- **Team members**: Oana Enache, Yi Mi, Yue Han
+- **Repository link**: https://github.com/oena/bios823_final_project
+- **Dashboard link**: https://share.streamlit.io/oena/bios823_final_project/dashboard/app_main.py
 
-We developed a dashboard to display the information related to COVID-19 related clinical trials, including data visualization of world trials and U.S. trials, clustering tirals by similarity and predicting trials' opening status. Our audience of visualization parts could be any people who are curious about COVID-19 related clinical trials even without professional knowledge since all plots are intuitive and easy to understand. But for the clustering part and predicting part, our audience needs to have some knowledge of statistics. We all know that clinical research is a crucial step to overcome the virus. The purpose of our project is to give people a basic understanding of COVID-19 related clinical research and to increase confidence for everyone to defeat the virus.
+### 2. Product and Purpose
+COVID-19 is ravaging the world. At this critical moment, clinical trials are crucial to overcome the virus. It is the basis for treatment of patients and vaccine development. We developed a dashboard to display the information related to COVID-19 related clinical trials, including data visualization of world trials and U.S. trials, clustering tirals by similarity and predicting trials' opening status.The purpose of our project is to give people a basic understanding of COVID-19 related clinical research and to increase confidence for everyone to defeat the virus. Our audience of visualization parts could be any people who are curious about COVID-19 related clinical trials even without professional knowledge since all plots are intuitive and easy to understand. But for the clustering part and predicting part, our audience needs to have some knowledge of statistics. 
 
-My main contribution:
+### 3. Dataset
+The dataset is from ClinicalTrials.gov, a database of privately and publicly funded clinical studies conducted around the world. The dataset includes ongoing and completed COVID-19 studies listed on the World Health Organization's International Clinical Trials Registry Platform (WHO ICTRP), in order to give researchers and the public rapid access to studies on COVID-19 studies. Information in the WHO ICTRP comes from clinical trial databases maintained by other countries or regions of the world. 
 
-You can find all code in our repository.
+### 4. My contributions and skillsets
+I mainly cleaned data, did exploratory data analyses, set up SQL server, built models and visualizations and set up my page on streamlit dashboard.
+
+The skillsets I demonstrate in this project include Data Science (`pandas`, `numpy`, `pandas_profiling`, `missingno`), SQL (`sqlite3`), Machine Learning (`sklearn`, `pycaret`, `yellowbrick`, `skopt`), Visualization (`plotly`, `matplotlib`), Dashboard (`streamlit`), several classifiers and functional programming in Python.
+
+In this post, I will elaborate on my contribution to this project and the technology I used. All code can be found in our repository.
 
 # Data Cleaning
 Based on my teammates' basic data cleaning process, I further cleaned the data to make it comply with SQLite3 schema.
@@ -61,11 +71,12 @@ First, I checked and confirmed that there are no duplication and the `NCT Number
 - **Study type**: describes the nature of a clinical study. Study types include interventional studies (also called clinical trials), observational studies (including patient registries), and expanded access.
 
 For example, we could have a 'OTHER\|NIH' in `Funded bys` field. 
-![]({{site.baseurl}}/images/final/bys1.png)
+![]({{site.baseurl}}/images/final/before.png)
 *Before*
+
 What I did was to extract those four columns with `NCT Number` separately (i.e. have four tables) and split the columns by vertical bars (i.e. long term). Then, for each of those four tables, we cannot have the `NCT Number` as the primary key anymore, since we will have duplicate PK. Under this situation, the `NCT Number` and `Funded bys` together will be a composite PK and others three tables are similar. We can easily use SQL quries to extrat data.
 
-![]({{site.baseurl}}/images/final/bys2.png)
+![]({{site.baseurl}}/images/final/after.png)
 *After*
 
 Other useful fields are store together in one table. 3NF is satisfied without partial dependency or transitive dependency. All tables are saved in SQLite3.
@@ -125,8 +136,7 @@ After finishing all the steps above, I applied `get_dummies` on X and splited th
 ## 2. Modelling
 I first and tried some traditional classifiers, such as Random Forest classifier and Logistic Regression classifier. When I tried to tune hyperparameters, I carefully read through the **[notebook][notebook]** of BIOSTAT 823 and found a really fancy tool, which is `pycaret`. `pycaret` provides nice and easy to use APIs for modelling.
 
-1. Comparing and tuning models
-<br>
+#### Comparing and tuning models
 I used pycaret to compare models and tuned models. After setting up, we can call `compare_models` and provide the metric we want to sort based on. I Here I sort the models by Accuracy.
 
 {% highlight python %}
@@ -142,12 +152,24 @@ clf = create_model('xgboost')
 tuned_clf = tune_model(clf)
 {% endhighlight %}
 ![]({{site.baseurl}}/images/final/model2.png)
-*Tuning xgboost model*
+*Creating and tuning xgboost model*
 
-2. ROC / confusion matrix / 
-difficulty: cannot fit in our env
+I got the idea here to display model comparison on our dashboard.
+
+#### Performance Plots
+In order to get more intuitive of model performance, I draw three different plots, ROC Curve, Precision-Recall Curve and Confusion Matrix.
+
+An ROC curve (receiver operating characteristic curve) is a graph showing the performance of a classification model at all classification thresholds. This curve plots two parameters: True Positive Rate. False Positive Rate. An ROC curve plots TPR vs. FPR at different classification thresholds. Lowering the classification threshold classifies more items as positive, thus increasing both False Positives and True Positives. 
+<cite>Google Machine Learning Crash Course.</cite>
+
+The Precision-Recall curve shows the tradeoff between precision and recall for different threshold. A high area under the curve represents both high recall and high precision, where high precision relates to a low false positive rate, and high recall relates to a low false negative rate. High scores for both show that the classifier is returning accurate results (high precision), as well as returning a majority of all positive results (high recall).
+<cite>scikit-learn.</cite>
+
+Confusion Matrix is an NxN table that summarizes how successful a classification model's predictions were; that is, the correlation between the label and the model's classification. One axis of a confusion matrix is the label that the model predicted, and the other axis is the actual label. N represents the number of classes. In a binary classification problem, N=2. <cite>Google Machine Learning Crash Course.</cite>
 
 ## 3. Insights
+
+
 Most important variables
 future plan in predicting probability of success
 
