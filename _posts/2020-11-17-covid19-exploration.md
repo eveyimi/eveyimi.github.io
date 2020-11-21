@@ -81,39 +81,69 @@ funded_bys.to_sql('funded_bys', conn, if_exists='replace', index=False)
 study_type.to_sql('study_type', conn, if_exists='replace', index=False)
 {% endhighlight %}
 
-# Exploratory Data Analysis
-Initially, we all did EDA seperately to explore data and get basic sense ourselves. I  explore two fields rough.
-1. Study design
-
-
-2. duration
-
-
-
 # Openning Status classification
-In the beginning, I plan to predict if the clinical trial will succeed or not based on variable `status`. I thought it would be really meaningful to have an idea of this most important sense. But when I looked into the data, I found that the data is highly imbalanced--it indicates that only one trial is successful, whose status is 'APPROVED FOR MARKETING'.
+In the beginning, I planned to predict if the clinical trial will succeed or not based on variable `Status`. It would be really meaningful to have an idea of this most important sense. But when I looked into the data, I found that the data is highly imbalanced--it indicates that only one trial is successful, whose status is 'APPROVED FOR MARKETING'.
+
+- **Status**:
+
+        ACTIVE, NOT RECRUITING      262
+        APPROVED FOR MARKETING        1
+        AVAILABLE                    22
+        COMPLETED                   460
+        ENROLLING BY INVITATION     125
+        NO LONGER AVAILABLE           4
+        NOT YET RECRUITING          870
+        RECRUITING                 1992
+        SUSPENDED                    23
+        TERMINATED                   30
+        WITHDRAWN                    60
+
+<br>
+
 ## 1. Data preprocessing
 
 #### Further cleaning
-1. age
-2. gender
-3. phases
-4. Study Type
-5. results
-6. funded bys
-7. locations
-8. duration
+I listed further data clearning steps as followed:
+1. **Age**: extracted the age phases in paranthesis and replaced the missing data as "OTHERS"; made the type as "category"
+2. **Gender**: replaced the missing data as "All"; made the type as "category"
+3. **Phases**: the original phases data may include two phases in one cell, I extracted the highest phase of each cell; made the type as "category"
+4. **Study Type**: it describes the nature of a clinical study, including interventional studies (also called clinical trials), observational studies (including patient registries), and expanded access. Some "expanded access" are followed by redundent details, and thus I removed the details and made the type as "category"
+5. **Results**: it indicates if the trail has result or not; made the type as "category"
+6. **Funded bys**: seperated the founded bys into four columns ('INDUDTRY', 'NIH', 'OTHER', 'U.S. FED') and each is a binary variable, indicating if the trial is funded by each of them or not
+7. **Locations**: replaced the missing data as "OTHER"; made the type as "category"
+8. **Duration**: calculated the duration of the trials by months
+9. **Status**: classified the status into active and not active two categories; made the type as "category"
 
-#### Imputation
-1. enrollment
-2. duration
+#### Imputation and Handling outliers
+There are some missing data in quantative variables **Enrollment** and **Duration**. I first fixed the missing data by imputing the mean and then removed the outliers which exceeded three times of the standard deviation.
 
 #### Handling imbalance data
+After finishing all the steps above, I applied `get_dummies` on X and splited the data into train and test datasets. Next I handled imbalanced data. Even if I decided to classify the active status rather than predicting the success and failure, the data is still imbalanced. After comparing the performance of over-sample, de-sample and the combination of them, I found that over-sample outputs the best performance, which was then used to handle our imbalanced data.
+
+
 
 ## 2. Modelling
-1. Comparing models
-I used pycaret to compare models and tuned models.
-<!-- plot -->
+I first and tried some traditional classifiers, such as Random Forest classifier and Logistic Regression classifier. When I tried to tune hyperparameters, I carefully read through the **[notebook][notebook]** of BIOSTAT 823 and found a really fancy tool, which is `pycaret`. `pycaret` provides nice and easy to use APIs for modelling.
+
+1. Comparing and tuning models
+<br>
+I used pycaret to compare models and tuned models. After setting up, we can call `compare_models` and provide the metric we want to sort based on. I Here I sort the models by Accuracy.
+
+{% highlight python %}
+best_model = compare_models(sort = 'Accuracy')
+{% endhighlight %}
+![]({{site.baseurl}}/images/final/model1.png)
+*Comparing models*
+
+We can see that Extreme Gradient Boosting classifier has the best performance on Accuracy, AUC and Kappa. We can create and tune the xgboost by the code below.
+
+{% highlight python %}
+clf = create_model('xgboost')
+tuned_clf = tune_model(clf)
+{% endhighlight %}
+![]({{site.baseurl}}/images/final/model2.png)
+*Tuning xgboost model*
+
 2. ROC / confusion matrix / 
 difficulty: cannot fit in our env
 
@@ -140,4 +170,4 @@ github usage
 
 
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
-
+[notebook]: http://people.duke.edu/~ccc14/bios-823-2020/index.html
