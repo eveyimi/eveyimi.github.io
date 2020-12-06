@@ -22,7 +22,7 @@ github: https://github.com/yimi97 # Add your github
 # Hero Section
 hero: true # To enable the section hero, use the value true. To turn off use the value false.
 hero-title: WELCOME # Add your hero title
-hero-subtitle: This is Yi's Personal website # Add your hero subtitle
+hero-subtitle: This is Yi's Data Science Portfolio # Add your hero subtitle
 hero-image: images/14.jpg # Add background image in section hero
 
 # Footer
