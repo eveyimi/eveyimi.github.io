@@ -1,13 +1,13 @@
 title: Blog
 # logo: "images/logo.svg" # You can add own logo image.
-description: Personal Website for BIOSTAT 823 in 2020 Fall.
+description: Personal Website for 2020 Fall.
 baseurl: "" # The subpath of your site, e.g. /blog
 url: "https://eveyimi.github.io" # The base hostname & protocol for your site, e.g. http://example.com
 
 # Author Settings
 author:
-  name: Yi Mi
-  bio: Hi, my name is Yi Mi. Thank you for visiting my blog.
+  name:
+  bio: Hi. Thank you for visiting my blog.
 
 # Contact links
 twitter:  # Add your Twitter handle
@@ -15,14 +15,14 @@ facebook:  # Add your Facebook handle
 dribbble:  # Add your Dribbble handle
 instagram:  # Add your Instagram handle
 pinterest:  # Add your Pinterest handle
-email: yi.mi@duke.edu # Add your Email address
-linkedin: https://www.linkedin.com/in/yimi97/ # Add your Email address
-github: https://github.com/yimi97 # Add your github
+email: # Add your Email address
+linkedin: # Add your Email address
+github: # Add your github
 
 # Hero Section
 hero: true # To enable the section hero, use the value true. To turn off use the value false.
 hero-title: WELCOME # Add your hero title
-hero-subtitle: This is Yi's Data Science Portfolio # Add your hero subtitle
+hero-subtitle: This is Data Science Portfolio # Add your hero subtitle
 hero-image: images/14.jpg # Add background image in section hero
 
 # Footer

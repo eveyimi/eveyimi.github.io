@@ -5,17 +5,17 @@ permalink: /about/
 image: images/03.jpg
 ---
 
-Hi, my name is Yi Mi. I am a second-year master student from Duke University. My interests are in both Data Science and Software Engineering. I love snowboarding and climbing.
+<!-- Hi, my name is. I am a second-year master student from Duke University. My interests are in both Data Science and Software Engineering. I love snowboarding and climbing.
 
 I would use this website to share my data science projects of [BIOSTAT 823][BIOSTAT 823].
 
 Please visit my GitHub and Linkedin to know me better.
 
-GitHub: https://github.com/eveyimi
+GitHub: https://github.com/eveyimis
 
 Linkedin: https://www.linkedin.com/in/yimi97/
 
-[BIOSTAT 823]: https://github.com/cliburn/bios-823-2020
+[BIOSTAT 823]: https://github.com/cliburn/bios-823-2020 -->
 
 <!-- #### Industry Design & Media
 

@@ -72,8 +72,8 @@ url: "https://eveyimi.github.io" # The base hostname & protocol for your site.
 
 # Author Settings
 author:
-  name: Yi Mi
-  bio: Hi, my name is Yi Mi. Thank you for visiting my blog.
+  name: 
+  bio: Thank you for visiting my blog.
 
 # Contact links
 twitter: https://twitter.com/ # Add your Twitter handle

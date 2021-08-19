@@ -12,7 +12,7 @@ Hello, welcome to my blog! This post will explore COVID-19 related clinical tria
 
 ### 1. Basic information
 - **Project name**: Exploring COVID-19 related clinical trials in the U.S. and Beyond
-- **Team members**: Oana Enache, Yi Mi, Yue Han
+- **Team members**: 
 - **Repository link**: https://github.com/oena/bios823_final_project
 - **Dashboard link**: https://share.streamlit.io/oena/bios823_final_project/dashboard/app_main.py
 
@@ -206,5 +206,5 @@ The important thing is not how fancy tools and diagrams are used, but how deep i
 
 
 [GitHub]: https://github.com/eveyimi/eveyimi.github.io
-[notebook]: http://people.duke.edu/~ccc14/bios-823-2020/index.html
+<!-- [notebook]: http://people.duke.edu/~ccc14/bios-823-2020/index.html -->
 [BIOSTAT 823]: https://github.com/cliburn/bios-823-2020
